@@ -241,8 +241,8 @@ num_train = NUM_DATASET_MAP[FLAGS.dataset_name][0] // FLAGS.batch_size
 num_test = NUM_DATASET_MAP[FLAGS.dataset_name][1] // FLAGS.batch_size
 
 for epoch in range(FLAGS.epoch):
+    train_step = 0
     if FLAGS.train:
-        train_step = 0
         sess.run(train_iterator.initializer)
         while True:
             try:
