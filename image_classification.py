@@ -239,9 +239,10 @@ test_iterator = tf.data.TFRecordDataset(test_filenames).map(test_dataset_map, FL
 
 num_train = NUM_DATASET_MAP[FLAGS.dataset_name][0] // FLAGS.batch_size
 num_test = NUM_DATASET_MAP[FLAGS.dataset_name][1] // FLAGS.batch_size
-train_step = 0
+
 for epoch in range(FLAGS.epoch):
     if FLAGS.train:
+        train_step = 0
         sess.run(train_iterator.initializer)
         while True:
             try:
@@ -254,7 +255,7 @@ for epoch in range(FLAGS.epoch):
                     print(
                         ("[%s TRAIN %d epoch, %d / %d step] accuracy: %f" % (
                             now, epoch, train_step, num_train, results[2])) + ops_results)
-                    train_writer.add_summary(results[1], train_step)
+                    train_writer.add_summary(results[1], train_step + epoch * num_train)
                 train_step += 1
             except tf.errors.OutOfRangeError:
                 break
@@ -273,7 +274,7 @@ for epoch in range(FLAGS.epoch):
                 ops_results = " ".join(list(map(lambda x: str(x), list(zip(ops_key, results[2:])))))
                 print(("[%s TEST %d epoch, %d /%d step] accuracy: %f" % (
                     now, epoch, test_step, num_test, results[1])) + ops_results)
-                test_writer.add_summary(results[0], test_step + train_step)
+                test_writer.add_summary(results[0], test_step + (train_step + epoch * num_train))
                 test_step += 1
             except tf.errors.OutOfRangeError:
                 break
