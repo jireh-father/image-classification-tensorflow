@@ -237,6 +237,8 @@ train_iterator = tf.data.TFRecordDataset(train_filenames).map(train_dataset_map,
 test_iterator = tf.data.TFRecordDataset(test_filenames).map(test_dataset_map, FLAGS.num_dataset_parallel).batch(
     FLAGS.batch_size).make_initializable_iterator()
 
+num_train = NUM_DATASET_MAP[FLAGS.dataset_name][0]
+num_test = NUM_DATASET_MAP[FLAGS.dataset_name][1]
 train_step = 0
 for epoch in range(FLAGS.epoch):
     if FLAGS.train:
@@ -250,8 +252,8 @@ for epoch in range(FLAGS.epoch):
                 if train_step % FLAGS.summary_interval == 0:
                     ops_results = " ".join(list(map(lambda x: str(x), list(zip(ops_key, results[3:])))))
                     print(
-                        ("[%s TRAIN %d epoch, %d step] accuracy: %f" % (
-                            now, epoch, train_step, results[2])) + ops_results)
+                        ("[%s TRAIN %d epoch, %d / %d step] accuracy: %f" % (
+                            now, epoch, train_step, num_train, results[2])) + ops_results)
                     train_writer.add_summary(results[1], train_step)
                 train_step += 1
             except tf.errors.OutOfRangeError:
@@ -269,7 +271,8 @@ for epoch in range(FLAGS.epoch):
                 total_accuracy += results[1]
                 now = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
                 ops_results = " ".join(list(map(lambda x: str(x), list(zip(ops_key, results[2:])))))
-                print(("[%s TEST %d epoch, %d step] accuracy: %f" % (now, epoch, test_step, results[1])) + ops_results)
+                print(("[%s TEST %d epoch, %d /%d step] accuracy: %f" % (
+                    now, epoch, test_step, num_test, results[1])) + ops_results)
                 test_writer.add_summary(results[0], test_step + train_step)
                 test_step += 1
             except tf.errors.OutOfRangeError:
