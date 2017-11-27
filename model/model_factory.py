@@ -29,6 +29,7 @@ from model import vgg
 from model import nasnet
 from model import conv
 from model import deconv
+from model import ed
 
 slim = tf.contrib.slim
 
@@ -59,7 +60,8 @@ networks_map = {'alexnet_v2': alexnet.alexnet_v2,
                 'nasnet_mobile': nasnet.build_nasnet_mobile,
                 'nasnet_large': nasnet.build_nasnet_large,
                 'conv': conv.build_model,
-                'deconv': deconv.build_model
+                'deconv': deconv.build_model,
+                'ed': ed.build_model
                 }
 
 arg_scopes_map = {'alexnet_v2': alexnet.alexnet_v2_arg_scope,
