@@ -40,3 +40,6 @@ def build_model(inputs, num_classes, is_training, model_conf):
     net = tf.layers.dense(net, num_classes, name="dense")
 
     return net, gen_x, gen_x_
+
+
+build_model.default_image_size = 224

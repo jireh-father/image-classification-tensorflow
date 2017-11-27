@@ -29,3 +29,6 @@ def build_model(inputs, num_classes, is_training, model_conf):
 
     net = tf.reshape(net, [-1, output_size * output_size], name="net_vectorize")
     return tf.layers.dense(net, num_classes, name="dense")
+
+
+build_model.default_image_size = 224

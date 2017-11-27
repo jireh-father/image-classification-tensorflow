@@ -4,12 +4,7 @@ import sys
 from datetime import datetime
 import tensorflow as tf
 import optimizer
-from model import alexnet
-from model import conv
-from model import inception_resnet_v2
-from model import inception_v4
-from model import resnet_v2
-from model import deconv
+from model import model_factory
 from preprocessing import preprocessing_factory
 
 slim = tf.contrib.slim
@@ -17,7 +12,7 @@ FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('dataset_name', "mnist", "dataset name")
 tf.app.flags.DEFINE_string('dataset_dir', "D:\develop\models_new_1122\\research\slim\\mnist_dataset", "dataset_dir")
 tf.app.flags.DEFINE_string('log_dir', "log_dir", "save dir")
-tf.app.flags.DEFINE_string('model_name', "alexnet", "model name")
+tf.app.flags.DEFINE_string('model_name', "alexnet_v2", "model name")
 tf.app.flags.DEFINE_integer('num_classes', 10, "num_classes")
 tf.app.flags.DEFINE_integer('num_channel', 1, "num_channel")
 tf.app.flags.DEFINE_integer('batch_size', 16, "batch_size")
@@ -135,17 +130,14 @@ tf.app.flags.DEFINE_float(
 
 tf.app.flags.DEFINE_boolean('cycle_learning_rate', True, "cycle")
 
-IMAGE_SIZE_MAP = {"alexnet": 224, "inception": 299, "inception_resnet": 299, "resnet": 224, "conv": 224, "deconv": 224}
 NUM_DATASET_MAP = {"mnist": [60000, 10000], "cifar10": [50000, 10000], "flowers": [3320, 350], "block": [4579, 510],
                    "direction": [3036, 332]}
 is_training = tf.placeholder(tf.bool, shape=(), name="is_training")
 
-if FLAGS.model_image_size is not None:
-    model_image_size = FLAGS.model_image_size
-else:
-    if FLAGS.model_name not in IMAGE_SIZE_MAP.keys():
-        sys.exit("invalid model name")
-    model_image_size = IMAGE_SIZE_MAP[FLAGS.model_name]
+model_f = model_factory.get_network_fn(FLAGS.model_name, FLAGS.num_classes, weight_decay=FLAGS.weight_decay,
+                                       is_training=is_training)
+
+model_image_size = FLAGS.model_image_size or model_f.default_image_size
 
 
 def pre_process(example_proto, training):
@@ -190,8 +182,9 @@ def get_model():
     global_step = tf.Variable(0, trainable=False)
     learning_rate = optimizer.configure_learning_rate(NUM_DATASET_MAP[FLAGS.dataset_name][0], global_step, FLAGS)
     # learning_rate = tf.placeholder(tf.float32, shape=(), name="learning_rate")
+
     if model_name == "deconv":
-        logits, gen_x, gen_x_ = deconv.build_model(inputs, num_classes, is_training, FLAGS)
+        logits, gen_x, gen_x_ = model_f(inputs, model_conf=FLAGS)
         class_loss_op = tf.reduce_mean(
             tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits))
         gen_loss_op = tf.log(
@@ -201,19 +194,12 @@ def get_model():
         ops = [class_loss_op, loss_op, gen_loss_op]
         ops_key = ["class_loss_op", "loss_op", "gen_loss_op"]
     else:
-        if model_name == "alexnet":
-            logits, end_points = alexnet.alexnet_v2(inputs, num_classes, is_training)
-        elif model_name == "inception":
-            logits, end_points = inception_v4.inception_v4(inputs, num_classes, is_training)
-        elif model_name == "inception_resnet":
-            logits, end_points = inception_resnet_v2.inception_resnet_v2(inputs, num_classes, is_training)
-        elif model_name == "resnet":
-            logits, end_points = resnet_v2.resnet_v2_152(inputs, num_classes, is_training)
-            logits = tf.reshape(logits, [-1, num_classes])
-        elif model_name == "conv":
-            logits = conv.build_model(inputs, num_classes, is_training, FLAGS)
+        if model_name == "conv":
+            logits = model_f(inputs, model_conf=FLAGS)
         else:
-            sys.exit("invalid model name")
+            logits, end_points = model_f(inputs)
+        if model_name == "resnet":
+            logits = tf.reshape(logits, [-1, num_classes])
         loss_op = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits))
         ops = [loss_op]
         ops_key = ["loss_op"]
@@ -273,7 +259,7 @@ for epoch in range(FLAGS.epoch):
         saver.save(sess, FLAGS.log_dir + "/model_epoch_%d.ckpt" % epoch)
     if FLAGS.eval:
         total_accuracy = 0
-        test_step = train_step
+        test_step = 0
         sess.run(test_iterator.initializer)
         while True:
             try:
@@ -284,7 +270,7 @@ for epoch in range(FLAGS.epoch):
                 now = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
                 ops_results = " ".join(list(map(lambda x: str(x), list(zip(ops_key, results[2:])))))
                 print(("[%s TEST %d epoch, %d step] accuracy: %f" % (now, epoch, test_step, results[1])) + ops_results)
-                test_writer.add_summary(results[0], test_step)
+                test_writer.add_summary(results[0], test_step + train_step)
                 test_step += 1
             except tf.errors.OutOfRangeError:
                 break
