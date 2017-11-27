@@ -237,8 +237,8 @@ train_iterator = tf.data.TFRecordDataset(train_filenames).map(train_dataset_map,
 test_iterator = tf.data.TFRecordDataset(test_filenames).map(test_dataset_map, FLAGS.num_dataset_parallel).batch(
     FLAGS.batch_size).make_initializable_iterator()
 
-num_train = NUM_DATASET_MAP[FLAGS.dataset_name][0]
-num_test = NUM_DATASET_MAP[FLAGS.dataset_name][1]
+num_train = NUM_DATASET_MAP[FLAGS.dataset_name][0] // FLAGS.batch_size
+num_test = NUM_DATASET_MAP[FLAGS.dataset_name][1] // FLAGS.batch_size
 train_step = 0
 for epoch in range(FLAGS.epoch):
     if FLAGS.train:
