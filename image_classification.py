@@ -1,31 +1,30 @@
-import tensorflow as tf
-from datetime import datetime
 import glob
 import os
-import alexnet
-import inception_v4
-import inception_resnet_v2
-import resnet_v2
-import conv
-import deconv
-import preprocessing_factory
 import sys
-from pattern import optimizer
+from datetime import datetime
+import tensorflow as tf
+import optimizer
+from model import alexnet
+from model import conv
+from model import inception_resnet_v2
+from model import inception_v4
+from model import resnet_v2
+from model import deconv
+from preprocessing import preprocessing_factory
 
 slim = tf.contrib.slim
 FLAGS = tf.app.flags.FLAGS
-tf.app.flags.DEFINE_string('dataset_name', "cifar10", "dataset name")
-tf.app.flags.DEFINE_string('dataset_dir', "D:\develop\models_new_1122\\research\slim\\cifar10_dataset", "dataset_dir")
+tf.app.flags.DEFINE_string('dataset_name', "mnist", "dataset name")
+tf.app.flags.DEFINE_string('dataset_dir', "D:\develop\models_new_1122\\research\slim\\mnist_dataset", "dataset_dir")
 tf.app.flags.DEFINE_string('log_dir', "log_dir", "save dir")
-tf.app.flags.DEFINE_string('model_name', "deconv", "model name")
+tf.app.flags.DEFINE_string('model_name', "alexnet", "model name")
 tf.app.flags.DEFINE_integer('num_classes', 10, "num_classes")
-tf.app.flags.DEFINE_integer('num_channel', 3, "num_channel")
+tf.app.flags.DEFINE_integer('num_channel', 1, "num_channel")
 tf.app.flags.DEFINE_integer('batch_size', 16, "batch_size")
 tf.app.flags.DEFINE_integer('model_image_size', None, "model_image_size")
 tf.app.flags.DEFINE_integer('deconv_image_size', 30, "deconv_image_size")
 tf.app.flags.DEFINE_integer('summary_interval', 10, "summary_interval")
 tf.app.flags.DEFINE_integer('summary_images', 32, "summary_images")
-tf.app.flags.DEFINE_float('learning_rate', 0.01, "learing rate")
 tf.app.flags.DEFINE_integer('epoch', 100, "epoch")
 tf.app.flags.DEFINE_boolean('train', True, "trains")
 tf.app.flags.DEFINE_boolean('eval', True, "eval")
@@ -38,7 +37,6 @@ tf.app.flags.DEFINE_boolean('pool_stride', 2, "pool_stride")
 tf.app.flags.DEFINE_string('strides', "[1,2,1,2,1,2,1]", "strides")
 tf.app.flags.DEFINE_integer('filter_size', 64, "filter_size")
 tf.app.flags.DEFINE_integer('shuffle_buffer', 50, "shuffle_buffer")
-tf.app.flags.DEFINE_integer('max_image_size', 320, "max_image_size")
 tf.app.flags.DEFINE_integer('num_layers', 7, "deconv layers")
 tf.app.flags.DEFINE_integer('num_dataset_parallel', 4, "deconv layers")
 tf.app.flags.DEFINE_string('restore_model_path', None, "model path to restore")
@@ -190,7 +188,7 @@ def get_model():
 
     labels = tf.placeholder(tf.float32, shape=[None, FLAGS.num_classes], name="labels")
     global_step = tf.Variable(0, trainable=False)
-    learning_rate = optimizer.configure_learning_rate(NUM_DATASET_MAP[FLAGS.dataset_name], global_step, FLAGS)
+    learning_rate = optimizer.configure_learning_rate(NUM_DATASET_MAP[FLAGS.dataset_name][0], global_step, FLAGS)
     # learning_rate = tf.placeholder(tf.float32, shape=(), name="learning_rate")
     if model_name == "deconv":
         logits, gen_x, gen_x_ = deconv.build_model(inputs, num_classes, is_training, FLAGS)

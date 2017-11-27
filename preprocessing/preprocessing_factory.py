@@ -13,17 +13,11 @@
 # limitations under the License.
 # ==============================================================================
 """Contains a factory for building various models."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-import tensorflow as tf
 
-import cifarnet_preprocessing
-import inception_preprocessing
-import lenet_preprocessing
-import vgg_preprocessing
-
-slim = tf.contrib.slim
+from preprocessing import inception_preprocessing
+from preprocessing import lenet_preprocessing
+from preprocessing import vgg_preprocessing
+from preprocessing import cifarnet_preprocessing
 
 
 def get_preprocessing(name, is_training=False):
