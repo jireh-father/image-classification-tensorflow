@@ -68,8 +68,6 @@ def configure_learning_rate(num_samples_per_epoch, global_step, conf):
     """
     decay_steps = int(num_samples_per_epoch / conf.batch_size *
                       conf.num_epochs_per_decay)
-    if conf.sync_replicas:
-        decay_steps /= conf.replicas_to_aggregate
 
     if conf.learning_rate_decay_type == 'exponential':
         return tf.train.exponential_decay(conf.learning_rate,

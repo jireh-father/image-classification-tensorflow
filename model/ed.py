@@ -8,6 +8,7 @@ bn_epsilon = 1e-5
 def build_model(inputs, num_classes, is_training, model_conf):
     filters = json.loads(model_conf.filters)
     strides = json.loads(model_conf.strides)
+    filter_size = json.loads(model_conf.filter_size)
     net = inputs
     net = tf.layers.conv2d(net, 64, 11, 4, padding='valid', kernel_initializer=tf.variance_scaling_initializer(),
                            name="conv1", kernel_regularizer=tf.contrib.layers.l2_regularizer(0.0005),
@@ -29,7 +30,7 @@ def build_model(inputs, num_classes, is_training, model_conf):
     net = tf.layers.max_pooling2d(net, 3, 2, name="maxpool3")
 
     for i in range(model_conf.num_layers):
-        net = tf.layers.conv2d_transpose(net, model_conf.filter_size, filters[i], strides=strides[i],
+        net = tf.layers.conv2d_transpose(net, filter_size[i], filters[i], strides=strides[i],
                                          padding='valid',
                                          kernel_initializer=tf.variance_scaling_initializer(), name="deconv" + str(i))
         if model_conf.bn:

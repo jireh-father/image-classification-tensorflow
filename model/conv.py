@@ -9,8 +9,11 @@ def build_model(inputs, num_classes, is_training, model_conf):
     filters = json.loads(model_conf.filters)
     net = inputs
     strides = json.loads(model_conf.strides)
+    pool_size = json.loads(model_conf.pool_size)
+    pool_stride = json.loads(model_conf.pool_stride)
+    filter_size = json.loads(model_conf.filter_size)
     for i in range(model_conf.num_layers):
-        net = tf.layers.conv2d(net, model_conf.filter_size, filters[i], strides=strides[i], padding='valid',
+        net = tf.layers.conv2d(net, filter_size[i], filters[i], strides=strides[i], padding='valid',
                                kernel_initializer=tf.variance_scaling_initializer(), name="conv" + str(i))
 
         if model_conf.bn:
@@ -18,7 +21,7 @@ def build_model(inputs, num_classes, is_training, model_conf):
                                                 center=True, scale=True, training=True, fused=True,
                                                 name="batch" + str(i))
         if model_conf.pooling:
-            net = tf.layers.max_pooling2d(net, model_conf.pool_size, model_conf.pool_stride, name="maxpool" + str(i))
+            net = tf.layers.max_pooling2d(net, pool_size[i], pool_stride[i], name="maxpool" + str(i))
         net = tf.nn.relu(net, name="relu" + str(i))
 
         tf.summary.histogram('activations_%d' % i, net)

@@ -5,14 +5,17 @@ import optimizer
 import os, glob
 from datetime import datetime
 
-NUM_DATASET_MAP = {"mnist": [60000, 10000], "cifar10": [50000, 10000], "flowers": [3320, 350], "block": [4579, 510],
-                   "direction": [3036, 332]}
+NUM_DATASET_MAP = {"mnist": [60000, 10000, 10, 1], "cifar10": [50000, 10000, 10, 3], "flowers": [3320, 350, 5, 3],
+                   "block": [4579, 510, 3, 1],
+                   "direction": [3036, 332, 4, 1]}
 
 
 def train(conf):
+    num_channel = NUM_DATASET_MAP[conf.dataset_name][3]
+    num_classes = NUM_DATASET_MAP[conf.dataset_name][2]
     is_training = tf.placeholder(tf.bool, shape=(), name="is_training")
 
-    model_f = model_factory.get_network_fn(conf.model_name, conf.num_classes, weight_decay=conf.weight_decay,
+    model_f = model_factory.get_network_fn(conf.model_name, num_classes, weight_decay=conf.weight_decay,
                                            is_training=is_training)
 
     model_image_size = conf.model_image_size or model_f.default_image_size
@@ -25,15 +28,15 @@ def train(conf):
         if conf.preprocessing_name:
             image_preprocessing_fn = preprocessing_factory.get_preprocessing(conf.preprocessing_name,
                                                                              is_training=training)
-            image = tf.image.decode_image(parsed_features["image/encoded"], conf.num_channel)
+            image = tf.image.decode_image(parsed_features["image/encoded"], num_channel)
             image = tf.clip_by_value(image_preprocessing_fn(image, model_image_size, model_image_size), .0, 1.0)
         else:
             image = tf.clip_by_value(tf.image.per_image_standardization(
-                tf.image.resize_images(tf.image.decode_jpeg(parsed_features["image/encoded"], conf.num_channel),
+                tf.image.resize_images(tf.image.decode_jpeg(parsed_features["image/encoded"], num_channel),
                                        [model_image_size, model_image_size])), .0, 1.0)
 
         if len(parsed_features["image/class/label"].get_shape()) == 0:
-            label = tf.one_hot(parsed_features["image/class/label"], conf.num_classes)
+            label = tf.one_hot(parsed_features["image/class/label"], num_classes)
         else:
             label = parsed_features["image/class/label"]
 
@@ -46,17 +49,16 @@ def train(conf):
         return pre_process(example_proto, False)
 
     def get_model():
-        num_classes = conf.num_classes
         model_name = conf.model_name
-
-        inputs = tf.placeholder(tf.float32, shape=[None, model_image_size, model_image_size, conf.num_channel],
+        inputs = tf.placeholder(tf.float32, shape=[None, model_image_size, model_image_size, num_channel],
                                 name="inputs")
 
-        labels = tf.placeholder(tf.float32, shape=[None, conf.num_classes], name="labels")
+        labels = tf.placeholder(tf.float32, shape=[None, num_classes], name="labels")
         global_step = tf.Variable(0, trainable=False)
         learning_rate = optimizer.configure_learning_rate(NUM_DATASET_MAP[conf.dataset_name][0], global_step, conf)
         # learning_rate = tf.placeholder(tf.float32, shape=(), name="learning_rate")
-
+        conf.num_channel = num_channel
+        conf.num_classes = num_classes
         if model_name in ["deconv", "ed"]:
             logits, gen_x, gen_x_ = model_f(inputs, model_conf=conf)
             class_loss_op = tf.reduce_mean(
@@ -155,3 +157,5 @@ def train(conf):
                 print("Avg Accuracy : %f" % (float(total_accuracy) / test_step))
         if not conf.train:
             break
+    tf.reset_default_graph()
+    sess.close()

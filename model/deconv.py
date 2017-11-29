@@ -8,9 +8,10 @@ bn_epsilon = 1e-5
 def build_model(inputs, num_classes, is_training, model_conf):
     filters = json.loads(model_conf.filters)
     strides = json.loads(model_conf.strides)
+    filter_size = json.loads(model_conf.filter_size)
     net = tf.image.resize_images(inputs, [model_conf.deconv_image_size, model_conf.deconv_image_size])
     for i in range(model_conf.num_layers):
-        net = tf.layers.conv2d_transpose(net, model_conf.filter_size, filters[i], strides=strides[i],
+        net = tf.layers.conv2d_transpose(net, filter_size[i], filters[i], strides=strides[i],
                                          padding='valid',
                                          kernel_initializer=tf.variance_scaling_initializer(), name="deconv" + str(i))
         if model_conf.bn:
