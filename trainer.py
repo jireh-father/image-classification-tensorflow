@@ -4,6 +4,7 @@ from preprocessing import preprocessing_factory
 import optimizer
 import os, glob
 from datetime import datetime
+import dataset
 
 NUM_DATASET_MAP = {"mnist": [60000, 10000, 10, 1], "cifar10": [50000, 10000, 10, 3], "flowers": [3320, 350, 5, 3],
                    "block": [4579, 510, 3, 1],
@@ -11,6 +12,11 @@ NUM_DATASET_MAP = {"mnist": [60000, 10000, 10, 1], "cifar10": [50000, 10000, 10,
 
 
 def train(conf):
+    if conf.dataset_name not in NUM_DATASET_MAP:
+        dataset.make_tfrecord(conf.dataset_name, conf.dataset_dir, conf.train_fraction)
+        NUM_DATASET_MAP[conf.dataset_name] = [conf.num_dataset * conf.train_fraction,
+                                              conf.num_dataset * (1 - conf.train_fraction), conf.num_classes,
+                                              conf.num_channel]
     num_channel = NUM_DATASET_MAP[conf.dataset_name][3]
     num_classes = NUM_DATASET_MAP[conf.dataset_name][2]
     is_training = tf.placeholder(tf.bool, shape=(), name="is_training")
@@ -59,7 +65,7 @@ def train(conf):
         # learning_rate = tf.placeholder(tf.float32, shape=(), name="learning_rate")
         conf.num_channel = num_channel
         conf.num_classes = num_classes
-        if model_name in ["deconv", "ed"]:
+        if model_name in ["deconv", "ed", "deconv_conv"]:
             logits, gen_x, gen_x_ = model_f(inputs, model_conf=conf)
             class_loss_op = tf.reduce_mean(
                 tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits))
@@ -91,8 +97,8 @@ def train(conf):
     if not os.path.exists(conf.dataset_dir):
         conf.dataset_dir = os.path.join("/home/data", conf.dataset_name)
 
-    train_filenames = glob.glob(os.path.join(conf.dataset_dir, conf.dataset_name + "_train*tfrecord"))
-    test_filenames = glob.glob(os.path.join(conf.dataset_dir, conf.dataset_name + "_validation*tfrecord"))
+    train_filenames = glob.glob(os.path.join(conf.dataset_dir, conf.dataset_name + ("_%s*tfrecord" % conf.train_name)))
+    test_filenames = glob.glob(os.path.join(conf.dataset_dir, conf.dataset_name + ("_%s*tfrecord" % conf.test_name)))
 
     inputs, labels, train_op, accuracy_op, merged, ops, ops_key = get_model()
 

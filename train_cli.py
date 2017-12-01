@@ -4,8 +4,10 @@ import trainer
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('dataset_name', "mnist", "dataset name")
 tf.app.flags.DEFINE_string('dataset_dir', "D:\develop\models_new_1122\\research\slim\\mnist_dataset", "dataset_dir")
+tf.app.flags.DEFINE_string('train_name', "test", "train dataset file name")
+tf.app.flags.DEFINE_string('test_name', "train", "test dataset file name")
 tf.app.flags.DEFINE_string('log_dir', "log_dir", "save dir")
-tf.app.flags.DEFINE_string('model_name', "ed", "model name")
+tf.app.flags.DEFINE_string('model_name', "deconv_conv", "model name")
 tf.app.flags.DEFINE_integer('batch_size', 16, "batch_size")
 tf.app.flags.DEFINE_integer('model_image_size', None, "model_image_size")
 tf.app.flags.DEFINE_integer('deconv_image_size', 30, "deconv_image_size")
