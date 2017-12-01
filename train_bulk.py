@@ -182,7 +182,9 @@ grid_params = {
 grid_params = {
     "dataset_name":
         {
-            "mnist": {"dataset_dir": "/home/data/mnist"}
+            "mnist": {"dataset_dir": "/home/data/mnist",
+                      "train_name": "validation",
+                      "test_name": "train"}
         }
     ,
     "model_name":
