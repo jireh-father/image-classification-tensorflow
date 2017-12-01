@@ -189,7 +189,7 @@ grid_params = {
     ,
     "model_name":
         {
-            "ed":
+            "deconv_conv":
                 {
                     "num_layers": 5,
                     "bn": True,
