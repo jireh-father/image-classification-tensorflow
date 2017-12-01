@@ -194,12 +194,12 @@ grid_params = {
                     "num_layers": 5,
                     "bn": True,
                     "add_image": True,
-                    "add_image_interval": 2,
+                    "add_image_interval": 1,
                     "strides": "[1,1,2,2,2]",
                     "filter_size": "[64,64,64,64,64]",
                     "filters": "[9,9,9,9,9]",
                     "deconv_image_size": 30,
-                    "batch_size": 16,
+                    "batch_size": 8,
                     "preprocessing_name": None
                 },
             # "conv":
@@ -215,25 +215,25 @@ grid_params = {
             #         "batch_size": 16,
             #         "preprocessing_name": None
             #     },
-            "alexnet_v2": {"preprocessing_name": None},
+            # "alexnet_v2": {"preprocessing_name": None},
             # "resnet_v2_152": {"preprocessing_name": None},
-            "resnet_v2_101": {"preprocessing_name": None},
+            # "resnet_v2_101": {"preprocessing_name": None},
             # "inception_resnet_v2": {"preprocessing_name": None},
             # "nasnet_large": {"preprocessing_name": None},
             # "cifarnet": {"preprocessing_name": [None, "cifarnet"]},
-            "vgg_19": {"preprocessing_name": [None, "vgg"]},
+            # "vgg_19": {"preprocessing_name": [None, "vgg"]},
             # "inception_v1": {"preprocessing_name": None},
             # "inception_v2": {"preprocessing_name": None},
             # "inception_v3": {"preprocessing_name": None},
             # "inception_v4": {"preprocessing_name": "vgg"}
         },
     "optimizer": {
-        "sgd": None,
+        # "sgd": None,
         "rmsprop":
             {
                 "rmsprop_momentum": 0.9,
                 "rmsprop_decay": 0.9,
-                "opt_epsilon": 1e-10,
+                "opt_epsilon": 1.0,
             },
         # "adadelta":
         #     {
@@ -265,7 +265,7 @@ grid_params = {
         {
             "exponential":
                 {
-                    "learning_rate": [0.01, 0.001],
+                    "learning_rate": 0.01,
                     "label_smoothing": 0.0,
                     "learning_rate_decay_factor": 0.94,
                     "num_epochs_per_decay": 2.0,
@@ -281,7 +281,7 @@ grid_params = {
             #         "cycle_learning_rate": True
             #     }
         },
-    "epoch": 3,
+    "epoch": 5,
     "weight_decay": 0.00004,
     "summary_interval": 10,
     "summary_images": 32,
