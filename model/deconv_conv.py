@@ -36,7 +36,6 @@ def build_model(inputs, num_classes, is_training, model_conf):
     gen_x = tf.nn.sigmoid(gen_x, name="gen_sigmoid")
     tf.summary.image(tensor=gen_x, max_outputs=model_conf.summary_images, name="gen_x")
     gen_x = tf.reshape(gen_x, [-1, gen_image_size * gen_image_size], "gen_x_vectorize")
-    print(net)
     net = tf.layers.conv2d(net, 64, 11, 4, padding='valid', kernel_initializer=tf.variance_scaling_initializer(),
                            name="conv1", kernel_regularizer=tf.contrib.layers.l2_regularizer(0.0005),
                            bias_initializer=tf.constant_initializer(0.1, ), activation=tf.nn.relu)
