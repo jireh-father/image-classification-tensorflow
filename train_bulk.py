@@ -61,7 +61,8 @@ DEFAULT_PARAMS = {
     'num_epochs_per_decay': 2.0,
     'moving_average_decay': None,
     'cycle_learning_rate': True,
-    'train_fraction': 0.9
+    'train_fraction': 0.9,
+    'vis_dir': None
 }
 
 grid_params = {
@@ -264,7 +265,7 @@ grid_params = {
         {
             "exponential":
                 {
-                    "learning_rate": 0.001,
+                    "learning_rate": 0.01,
                     "label_smoothing": 0.0,
                     "learning_rate_decay_factor": 0.94,
                     "num_epochs_per_decay": 2.0,
@@ -317,14 +318,20 @@ for i, result in enumerate(results):
 print(len(results))
 for params in results:
     try:
-        params["log_dir"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "log_" + datetime.now().strftime(
-            '%Y%m%d%H%M%S'), params["dataset_name"], params["model_name"], str(uuid.uuid4()))
+        now = datetime.now().strftime('%Y%m%d%H%M%S')
+        params["log_dir"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "log_" + now,
+                                         params["dataset_name"], params["model_name"], str(uuid.uuid4()), "summary")
+        params["vis_dir"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "log_" + now,
+                                         params["dataset_name"], params["model_name"], str(uuid.uuid4()), "embedding")
+
         print("model_name", params["model_name"])
         print("dataset_name", params["dataset_name"])
         print("log_dir", params["log_dir"])
         print(params)
         if not os.path.exists(params["log_dir"]):
             os.makedirs(params["log_dir"])
+        if not os.path.exists(params["vis_dir"]):
+            os.makedirs(params["vis_dir"])
         json.dump(params, open(os.path.join(params["log_dir"], "train_info.json"), mode="w"))
         params = Dict2Obj(params)
         trainer.train(params)

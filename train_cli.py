@@ -7,6 +7,7 @@ tf.app.flags.DEFINE_string('dataset_dir', "D:\develop\models_new_1122\\research\
 tf.app.flags.DEFINE_string('train_name', "test", "train dataset file name")
 tf.app.flags.DEFINE_string('test_name', "train", "test dataset file name")
 tf.app.flags.DEFINE_string('log_dir', "log_dir", "save dir")
+tf.app.flags.DEFINE_string('vis_dir', None, "vis_dir")
 tf.app.flags.DEFINE_string('model_name', "deconv_conv", "model name")
 tf.app.flags.DEFINE_integer('batch_size', 16, "batch_size")
 tf.app.flags.DEFINE_integer('model_image_size', None, "model_image_size")

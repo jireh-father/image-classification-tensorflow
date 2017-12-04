@@ -5,6 +5,8 @@ import optimizer
 import os, glob
 from datetime import datetime
 import dataset
+import visualizer
+import numpy as np
 
 NUM_DATASET_MAP = {"mnist": [60000, 10000, 10, 1], "cifar10": [50000, 10000, 10, 3], "flowers": [3320, 350, 5, 3],
                    "block": [4579, 510, 3, 1],
@@ -92,7 +94,7 @@ def train(conf):
         tf.summary.scalar('accuracy', accuracy_op)
         merged = tf.summary.merge_all()
 
-        return inputs, labels, train_op, accuracy_op, merged, ops, ops_key
+        return inputs, labels, train_op, accuracy_op, merged, ops, ops_key, logits
 
     if not os.path.exists(conf.dataset_dir):
         conf.dataset_dir = os.path.join("/home/data", conf.dataset_name)
@@ -100,7 +102,7 @@ def train(conf):
     train_filenames = glob.glob(os.path.join(conf.dataset_dir, conf.dataset_name + ("_%s*tfrecord" % conf.train_name)))
     test_filenames = glob.glob(os.path.join(conf.dataset_dir, conf.dataset_name + ("_%s*tfrecord" % conf.test_name)))
 
-    inputs, labels, train_op, accuracy_op, merged, ops, ops_key = get_model()
+    inputs, labels, train_op, accuracy_op, merged, ops, ops_key, logits = get_model()
 
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -145,22 +147,34 @@ def train(conf):
             total_accuracy = 0
             test_step = 0
             sess.run(test_iterator.initializer)
+            total_dataset = []
+            total_labels = []
+            total_activations = []
             while True:
                 try:
                     test_xs, test_ys = sess.run(test_iterator.get_next())
                     results = sess.run(
-                        [merged, accuracy_op] + ops, feed_dict={inputs: test_xs, labels: test_ys, is_training: False})
+                        [merged, accuracy_op, logits] + ops,
+                        feed_dict={inputs: test_xs, labels: test_ys, is_training: False})
                     total_accuracy += results[1]
                     now = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                    ops_results = " ".join(list(map(lambda x: str(x), list(zip(ops_key, results[2:])))))
+                    ops_results = " ".join(list(map(lambda x: str(x), list(zip(ops_key, results[3:])))))
                     print(("[%s TEST %d epoch, %d /%d step] accuracy: %f" % (
                         now, epoch, test_step, num_test, results[1])) + ops_results)
                     test_writer.add_summary(results[0], test_step + (train_step + epoch * num_train))
                     test_step += 1
+                    if epoch == conf.epoch - 1 and conf.vis_dir:
+                        total_dataset = np.append(test_xs, total_dataset, axis=0)
+                        total_labels = np.append(test_ys, total_labels, axis=0)
+                        total_activations = np.append(results[2], total_activations, axis=0)
                 except tf.errors.OutOfRangeError:
                     break
             if test_step > 0:
                 print("Avg Accuracy : %f" % (float(total_accuracy) / test_step))
+            if epoch == conf.epoch - 1 and conf.vis_dir:
+                visualizer.summary_embedding(sess=sess, dataset=total_dataset, embedding_list=[total_activations],
+                                             embedding_path=conf.vis_dir, image_size=model_image_size,
+                                             channel=num_channel, labels=total_labels)
         if not conf.train:
             break
     tf.reset_default_graph()
