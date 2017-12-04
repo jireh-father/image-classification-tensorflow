@@ -62,7 +62,7 @@ DEFAULT_PARAMS = {
     'moving_average_decay': None,
     'cycle_learning_rate': True,
     'train_fraction': 0.9,
-    'vis_dir': None
+    'visualize_embedding': False
 }
 
 grid_params = {
@@ -286,7 +286,8 @@ grid_params = {
     "summary_interval": 10,
     "summary_images": 32,
     "shuffle_buffer": 100,
-    "num_dataset_parallel": 4
+    "num_dataset_parallel": 4,
+    "visualize_embedding": True
 
 }
 results = trainer_parser.parse_train_conf(grid_params)
@@ -321,8 +322,10 @@ for params in results:
         now = datetime.now().strftime('%Y%m%d%H%M%S')
         params["log_dir"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "log_" + now,
                                          params["dataset_name"], params["model_name"], str(uuid.uuid4()), "summary")
-        params["vis_dir"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "log_" + now,
-                                         params["dataset_name"], params["model_name"], str(uuid.uuid4()), "embedding")
+        if params["visualize_embedding"]:
+            params["vis_dir"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "log_" + now,
+                                             params["dataset_name"], params["model_name"], str(uuid.uuid4()),
+                                             "embedding")
 
         print("model_name", params["model_name"])
         print("dataset_name", params["dataset_name"])
@@ -330,7 +333,7 @@ for params in results:
         print(params)
         if not os.path.exists(params["log_dir"]):
             os.makedirs(params["log_dir"])
-        if not os.path.exists(params["vis_dir"]):
+        if not os.path.exists(params["vis_dir"]) and params["visualize_embedding"]:
             os.makedirs(params["vis_dir"])
         json.dump(params, open(os.path.join(params["log_dir"], "train_info.json"), mode="w"))
         params = Dict2Obj(params)
