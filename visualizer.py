@@ -78,7 +78,7 @@ def make_metadata(labels, output_path):
 def make_embed_tensor(sess, embed_vectors, embed_idx):
     if len(embed_vectors.shape) != 2:
         embed_tensor = tf.Variable(np.array(embed_vectors).reshape(len(embed_vectors), -1),
-                                   name=('embed_%s' % embed_idx))
+                                   name=('embed_%d' % embed_idx))
     else:
         embed_tensor = tf.Variable(embed_vectors, name=('embed_%s' % embed_idx))
 

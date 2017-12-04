@@ -6,6 +6,7 @@ import uuid
 import os
 import json
 from datetime import datetime
+import tensorflow as tf
 
 DEFAULT_PARAMS = {
     'dataset_name': None,
@@ -339,5 +340,6 @@ for params in results:
         params = Dict2Obj(params)
         trainer.train(params)
     except Exception as e:
+        tf.reset_default_graph()
         traceback.print_exc()
         # print(e)

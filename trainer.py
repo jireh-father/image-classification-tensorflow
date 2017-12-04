@@ -127,9 +127,13 @@ def train(conf):
         train_step = 0
         if conf.train:
             sess.run(train_iterator.initializer)
+
             while True:
                 try:
                     batch_xs, batch_ys = sess.run(train_iterator.get_next())
+                    total_dataset = []
+                    np.append(batch_xs, total_dataset, axis=0)
+                    sys.exit()
                     results = sess.run([train_op, merged, accuracy_op] + ops,
                                        feed_dict={inputs: batch_xs, labels: batch_ys, is_training: True})
                     now = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
@@ -177,5 +181,5 @@ def train(conf):
                                              channel=num_channel, labels=total_labels)
         if not conf.train:
             break
-    tf.reset_default_graph()
+
     sess.close()
