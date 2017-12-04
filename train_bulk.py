@@ -220,7 +220,7 @@ grid_params = {
             # "inception_resnet_v2": {"preprocessing_name": None},
             # "nasnet_large": {"preprocessing_name": None},
             # "cifarnet": {"preprocessing_name": [None, "cifarnet"]},
-            "vgg_19": {"preprocessing_name": None, "batch_size": 64},
+            # "vgg_19": {"preprocessing_name": None, "batch_size": 64},
             # "inception_v1": {"preprocessing_name": None},
             # "inception_v2": {"preprocessing_name": None},
             # "inception_v3": {"preprocessing_name": None},
@@ -264,7 +264,7 @@ grid_params = {
         {
             "exponential":
                 {
-                    "learning_rate": 0.01,
+                    "learning_rate": 0.001,
                     "label_smoothing": 0.0,
                     "learning_rate_decay_factor": 0.94,
                     "num_epochs_per_decay": 2.0,
@@ -280,7 +280,7 @@ grid_params = {
             #         "cycle_learning_rate": True
             #     }
         },
-    "epoch": 20,
+    "epoch": 50,
     "weight_decay": 0.00004,
     "summary_interval": 10,
     "summary_images": 32,
