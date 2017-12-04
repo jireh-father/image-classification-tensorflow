@@ -182,26 +182,25 @@ grid_params = {
 grid_params = {
     "dataset_name":
         {
-            "mnist": {"dataset_dir": "/home/data/mnist",
-                      "train_name": "validation",
-                      "test_name": "train"}
+            "block": {"dataset_dir": "/home/data/block"},
+            "direction": {"dataset_dir": "/home/data/direction"}
         }
     ,
     "model_name":
         {
-            "deconv_conv":
-                {
-                    "num_layers": 5,
-                    "bn": True,
-                    "add_image": True,
-                    "add_image_interval": 1,
-                    "strides": "[1,1,2,2,2]",
-                    "filter_size": "[64,64,64,64,64]",
-                    "filters": "[9,9,9,9,9]",
-                    "deconv_image_size": 30,
-                    "batch_size": 8,
-                    "preprocessing_name": None
-                },
+            # "deconv_conv":
+            #     {
+            #         "num_layers": 5,
+            #         "bn": True,
+            #         "add_image": True,
+            #         "add_image_interval": 1,
+            #         "strides": "[1,1,2,2,2]",
+            #         "filter_size": "[64,64,64,64,64]",
+            #         "filters": "[9,9,9,9,9]",
+            #         "deconv_image_size": 30,
+            #         "batch_size": 8,
+            #         "preprocessing_name": None
+            #     },
             # "conv":
             #     {
             #         "num_layers": [5, 3],
@@ -215,13 +214,13 @@ grid_params = {
             #         "batch_size": 16,
             #         "preprocessing_name": None
             #     },
-            # "alexnet_v2": {"preprocessing_name": None},
+            "alexnet_v2": {"preprocessing_name": None, "batch_size": 64},
             # "resnet_v2_152": {"preprocessing_name": None},
             # "resnet_v2_101": {"preprocessing_name": None},
             # "inception_resnet_v2": {"preprocessing_name": None},
             # "nasnet_large": {"preprocessing_name": None},
             # "cifarnet": {"preprocessing_name": [None, "cifarnet"]},
-            # "vgg_19": {"preprocessing_name": [None, "vgg"]},
+            "vgg_19": {"preprocessing_name": None, "batch_size": 64},
             # "inception_v1": {"preprocessing_name": None},
             # "inception_v2": {"preprocessing_name": None},
             # "inception_v3": {"preprocessing_name": None},
@@ -281,7 +280,7 @@ grid_params = {
             #         "cycle_learning_rate": True
             #     }
         },
-    "epoch": 5,
+    "epoch": 20,
     "weight_decay": 0.00004,
     "summary_interval": 10,
     "summary_images": 32,
