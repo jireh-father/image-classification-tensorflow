@@ -8,6 +8,7 @@ import dataset
 import visualizer
 import numpy as np
 import json
+from tensorflow.contrib.tensorboard.plugins import projector
 
 NUM_DATASET_MAP = {"mnist": [60000, 10000, 10, 1], "cifar10": [50000, 10000, 10, 3], "flowers": [3320, 350, 5, 3],
                    "block": [4579, 510, 3, 1],
@@ -132,7 +133,12 @@ def train(conf):
 
     num_train = NUM_DATASET_MAP[conf.dataset_name][0] // conf.batch_size
     num_test = NUM_DATASET_MAP[conf.dataset_name][1] // conf.batch_size
-
+    if conf.vis_epoch is not None:
+        config = projector.ProjectorConfig()
+        vis_dir = os.path.join(conf.log_dir, "embedding")
+        total_dataset = None
+        total_labels = None
+        total_activations = None
     for epoch in range(conf.epoch):
         train_step = 0
         if conf.train:
@@ -159,9 +165,7 @@ def train(conf):
             total_accuracy = 0
             test_step = 0
             sess.run(test_iterator.initializer)
-            total_dataset = None
-            total_labels = None
-            total_activations = None
+
             while True:
                 try:
                     test_xs, test_ys = sess.run(test_iterator.get_next())
@@ -189,13 +193,19 @@ def train(conf):
                     break
             if test_step > 0:
                 print("Avg Accuracy : %f" % (float(total_accuracy) / test_step))
-            if conf.vis_epoch is not None and epoch % conf.vis_epoch == 0:
-                # vis_dir = os.path.join(conf.log_dir, "embed_vis_%d" % epoch)
-                vis_dir = os.path.join(conf.log_dir, "embed_vis")
-                visualizer.summary_embedding(sess=sess, dataset=total_dataset, embedding_list=[total_activations],
+                if conf.vis_epoch is not None and epoch % conf.vis_epoch == 0:
+                    # vis_dir = os.path.join(conf.log_dir, "embed_vis_%d" % epoch)
+
+                    visualizer.add_embedding(config, sess=sess, embedding_list=[total_activations],
                                              embedding_path=vis_dir, image_size=model_image_size,
-                                             channel=num_channel, labels=total_labels, prefix=epoch)
+                                             channel=num_channel, labels=total_labels, prefix="epoch" + str(epoch))
+                    # visualizer.summary_embedding(sess=sess, dataset=total_dataset, embedding_list=[total_activations],
+                    #                              embedding_path=vis_dir, image_size=model_image_size,
+                    #                              channel=num_channel, labels=total_labels, prefix="epoch" + str(epoch))
         if not conf.train:
             break
+    if conf.vis_epoch is not None:
+        visualizer.write_embedding(config, sess, total_dataset, embedding_path=vis_dir, image_size=model_image_size,
+                                   channel=num_channel, labels=total_labels)
 
     sess.close()

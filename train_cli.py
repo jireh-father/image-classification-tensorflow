@@ -8,7 +8,8 @@ tf.app.flags.DEFINE_string('dataset_dir', "F:\data\grading\\block_test\\block_im
                            "dataset_dir")
 tf.app.flags.DEFINE_string('train_name', "train", "train dataset file name")
 tf.app.flags.DEFINE_string('test_name', "validation", "test dataset file name")
-tf.app.flags.DEFINE_string('log_dir', "log_dir", "save dir")
+tf.app.flags.DEFINE_string('log_dir', os.path.join(os.path.dirname(os.path.realpath(__file__)), "checkpoint"),
+                           "save dir")
 tf.app.flags.DEFINE_integer('vis_epoch', 1, "vis_epoch")
 tf.app.flags.DEFINE_integer('num_vis_steps', 10, "num_vis_steps")
 tf.app.flags.DEFINE_integer('num_save_interval', 1, "num_save_interval")

@@ -8,6 +8,8 @@ import json
 from datetime import datetime
 import tensorflow as tf
 
+FLAGS = tf.app.flags.FLAGS
+tf.app.flags.DEFINE_string('bulk_json', None, "bulk_json")
 DEFAULT_PARAMS = {
     'dataset_name': None,
     'dataset_dir': None,
@@ -233,9 +235,11 @@ grid_params = {
     "visualize_embedding": True
 
 }
-results = trainer_parser.parse_train_conf(grid_params)
 
-import json
+if FLAGS.bulk_json:
+    grid_params = json.load(open(FLAGS.bulk_json))
+
+results = trainer_parser.parse_train_conf(grid_params)
 
 
 # for result in results:

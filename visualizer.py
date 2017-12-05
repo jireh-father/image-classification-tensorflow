@@ -5,6 +5,34 @@ import numpy as np
 import tensorflow as tf
 
 
+def add_embedding(config, sess, embedding_list, embedding_path, image_size, channel=3, labels=None, prefix=None):
+    if not os.path.exists(embedding_path):
+        os.makedirs(embedding_path)
+    prefix = str(prefix)
+
+    for embed_idx, embed_vectors in enumerate(embedding_list):
+        embed_tensor = make_embed_tensor(sess, embed_vectors, embed_idx, prefix)
+        write_projector_config(config, embed_tensor.name, embedding_path, image_size, channel, labels)
+
+    save_model(sess, embedding_path, prefix)
+
+
+def write_embedding(config, sess, dataset, embedding_path, image_size, channel=3, labels=None):
+    if len(dataset.shape) == 2:
+        dataset = dataset.reshape((-1, image_size * image_size * channel))
+
+    summary_writer = tf.summary.FileWriter(embedding_path, sess.graph)
+
+    projector.visualize_embeddings(summary_writer, config)
+
+    summary_writer.close()
+
+    # Make sprite and labels.
+    make_sprite(dataset, image_size, channel, embedding_path)
+    if labels is not None and len(labels) > 0:
+        make_metadata(labels, embedding_path)
+
+
 def summary_embedding(sess, dataset, embedding_list, embedding_path, image_size, channel=3, labels=None, prefix=None):
     if not os.path.exists(embedding_path):
         os.makedirs(embedding_path)
@@ -18,17 +46,18 @@ def summary_embedding(sess, dataset, embedding_list, embedding_path, image_size,
 
     for embed_idx, embed_vectors in enumerate(embedding_list):
         embed_tensor = make_embed_tensor(sess, embed_vectors, embed_idx, prefix)
-        write_projector_config(config, embed_tensor.name, embedding_path, image_size, channel, summary_writer, labels,
-                               prefix)
+        write_projector_config(config, embed_tensor.name, embedding_path, image_size, channel, labels)
+
+    projector.visualize_embeddings(summary_writer, config)
 
     summary_writer.close()
 
     save_model(sess, embedding_path, prefix)
 
     # Make sprite and labels.
-    make_sprite(dataset, image_size, channel, embedding_path, prefix)
+    make_sprite(dataset, image_size, channel, embedding_path)
     if labels is not None and len(labels) > 0:
-        make_metadata(labels, embedding_path, prefix)
+        make_metadata(labels, embedding_path)
 
 
 def images_to_sprite(data):
@@ -58,24 +87,18 @@ def images_to_sprite(data):
     return data
 
 
-def make_sprite(dataset, image_size, channel, output_path, prefix):
+def make_sprite(dataset, image_size, channel, output_path):
     if channel == 1:
         images = np.array(dataset).reshape((-1, image_size, image_size)).astype(np.float32)
     else:
         images = np.array(dataset).reshape((-1, image_size, image_size, channel)).astype(np.float32)
     sprite = images_to_sprite(images)
-    sprite_name = 'sprite.png'
-    if prefix:
-        sprite_name = 'sprite%s.tsv' % prefix
-    scipy.misc.imsave(os.path.join(output_path, sprite_name), sprite)
+    scipy.misc.imsave(os.path.join(output_path, 'sprite.png'), sprite)
 
 
-def make_metadata(labels, output_path, prefix=None):
+def make_metadata(labels, output_path):
     labels = np.array(labels).flatten()
-    label_name = 'labels.tsv'
-    if prefix:
-        label_name = 'labels_%s.tsv' % prefix
-    metadata_file = open(os.path.join(output_path, label_name), 'w')
+    metadata_file = open(os.path.join(output_path, 'labels.tsv'), 'w')
     metadata_file.write('Name\tClass\n')
     for i in range(len(labels)):
         metadata_file.write('%06d\t%d\n' % (i, labels[i]))
@@ -95,23 +118,16 @@ def make_embed_tensor(sess, embed_vectors, embed_idx, prefix=None):
     return embed_tensor
 
 
-def write_projector_config(config, tensor_name, output_path, image_size, channel, summary_writer, labels, prefix=None):
+def write_projector_config(config, tensor_name, output_path, image_size, channel, labels):
     embedding = config.embeddings.add()
     embedding.tensor_name = tensor_name
     if labels is not None and len(labels) > 0:
-        label_name = 'labels.tsv'
-        if prefix:
-            label_name = 'labels_%s.tsv' % prefix
-        embedding.metadata_path = os.path.join(output_path, label_name)
-    sprite_name = 'sprite.png'
-    if prefix:
-        sprite_name = 'sprite%s.tsv' % prefix
-    embedding.sprite.image_path = os.path.join(output_path, sprite_name)
+        embedding.metadata_path = os.path.join(output_path, 'labels.tsv')
+    embedding.sprite.image_path = os.path.join(output_path, 'sprite.png')
     if channel == 1:
         embedding.sprite.single_image_dim.extend([image_size, image_size])
     else:
         embedding.sprite.single_image_dim.extend([image_size, image_size, channel])
-    projector.visualize_embeddings(summary_writer, config)
 
 
 def save_model(sess, output_path, prefix=None):
@@ -119,5 +135,5 @@ def save_model(sess, output_path, prefix=None):
     saver = tf.train.Saver()
     model_name = 'model_embed.ckpt'
     if prefix:
-        model_name = 'model_embed%s.ckpt' % prefix
+        model_name = 'model_embed_%s.ckpt' % prefix
     saver.save(sess, os.path.join(output_path, model_name))
