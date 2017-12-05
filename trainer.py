@@ -153,7 +153,8 @@ def train(conf):
                     train_step += 1
                 except tf.errors.OutOfRangeError:
                     break
-            saver.save(sess, conf.log_dir + "/model_epoch_%d.ckpt" % epoch)
+            if epoch % conf.num_save_interval == 0:
+                saver.save(sess, conf.log_dir + "/model_epoch_%d.ckpt" % epoch)
         if conf.eval:
             total_accuracy = 0
             test_step = 0
