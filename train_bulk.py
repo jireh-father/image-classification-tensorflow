@@ -186,38 +186,12 @@ grid_params = {
 grid_params = {
     "dataset_name":
         {
-            "block": {"dataset_dir": "/home/data/block"},
-            "direction": {"dataset_dir": "/home/data/direction"}
+            "block": {"dataset_dir": "/home/data/block", "epoch": 50},
+            "direction": {"dataset_dir": "/home/data/direction", "epoch": 20}
         }
     ,
     "model_name":
         {
-            # "deconv_conv":
-            #     {
-            #         "num_layers": 5,
-            #         "bn": True,
-            #         "add_image": True,
-            #         "add_image_interval": 1,
-            #         "strides": "[1,1,2,2,2]",
-            #         "filter_size": "[64,64,64,64,64]",
-            #         "filters": "[9,9,9,9,9]",
-            #         "deconv_image_size": 30,
-            #         "batch_size": 8,
-            #         "preprocessing_name": None
-            #     },
-            # "conv":
-            #     {
-            #         "num_layers": [5, 3],
-            #         "bn": True,
-            #         "pooling": True,
-            #         "pool_size": "[3,3,3,3,3]",
-            #         "pool_stride": "[2,2,2,2,2]",
-            #         "strides": "[2,2,1,1,1]",
-            #         "filter_size": "[64,64,64,64,64]",
-            #         "filters": "[9,9,9,9,9]",
-            #         "batch_size": 16,
-            #         "preprocessing_name": None
-            #     },
             "alexnet_v2": {"preprocessing_name": None, "batch_size": 64},
             # "resnet_v2_152": {"preprocessing_name": None},
             # "resnet_v2_101": {"preprocessing_name": None},
@@ -238,31 +212,6 @@ grid_params = {
                 "rmsprop_decay": 0.9,
                 "opt_epsilon": 1.0,
             },
-        # "adadelta":
-        #     {
-        #         "adadelta_rho": 0.95,
-        #         "opt_epsilon": 1.0,
-        #     },
-        # "adagrad":
-        #     {
-        #         "adagrad_initial_accumulator_value": 0.1
-        #     },
-        # "adam":
-        #     {
-        #         "adam_beta1": 0.9,
-        #         "adam_beta2": 0.999,
-        #         "opt_epsilon": 1e-8,
-        #     },
-        # "ftrl":
-        #     {
-        #         "ftrl_learning_rate_power": -0.5,
-        #         "ftrl_initial_accumulator_value": 0.1,
-        #         "ftrl_l1": 0.0,
-        #         "ftrl_l2": 0.0
-        #     },
-        # "momentum": {
-        #     "momentum": 0.9,
-        # }
     },
     "learning_rate_decay_type":
         {
@@ -274,17 +223,7 @@ grid_params = {
                     "num_epochs_per_decay": 2.0,
                     "moving_average_decay": None
                 },
-            # "polynomial":
-            #     {
-            #         "learning_rate": [0.01, 0.001],
-            #         "end_learning_rate": 0.0001,
-            #         "label_smoothing": 0.0,
-            #         "num_epochs_per_decay": 2.0,
-            #         "moving_average_decay": None,
-            #         "cycle_learning_rate": True
-            #     }
         },
-    "epoch": 100,
     "weight_decay": 0.00004,
     "summary_interval": 10,
     "summary_images": 64,
