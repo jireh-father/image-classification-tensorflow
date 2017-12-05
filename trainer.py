@@ -194,7 +194,7 @@ def train(conf):
                 vis_dir = os.path.join(conf.log_dir, "embed_vis")
                 visualizer.summary_embedding(sess=sess, dataset=total_dataset, embedding_list=[total_activations],
                                              embedding_path=vis_dir, image_size=model_image_size,
-                                             channel=num_channel, labels=total_labels, prefix=str(epoch))
+                                             channel=num_channel, labels=total_labels, prefix=epoch)
         if not conf.train:
             break
 
