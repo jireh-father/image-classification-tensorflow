@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 
 
-def summary_embedding(sess, dataset, embedding_list, embedding_path, image_size, channel=3, labels=None):
+def summary_embedding(sess, dataset, embedding_list, embedding_path, image_size, channel=3, labels=None, prefix=None):
     if not os.path.exists(embedding_path):
         os.makedirs(embedding_path)
 
@@ -17,7 +17,7 @@ def summary_embedding(sess, dataset, embedding_list, embedding_path, image_size,
     config = projector.ProjectorConfig()
 
     for embed_idx, embed_vectors in enumerate(embedding_list):
-        embed_tensor = make_embed_tensor(sess, embed_vectors, embed_idx)
+        embed_tensor = make_embed_tensor(sess, embed_vectors, embed_idx, prefix)
         write_projector_config(config, embed_tensor.name, embedding_path, image_size, channel, summary_writer, labels)
 
     summary_writer.close()
@@ -75,12 +75,15 @@ def make_metadata(labels, output_path):
     metadata_file.close()
 
 
-def make_embed_tensor(sess, embed_vectors, embed_idx):
+def make_embed_tensor(sess, embed_vectors, embed_idx, prefix=None):
+    embed_name = "embed_%d" % embed_idx
+    if prefix:
+        embed_name += ("_" + prefix)
     if len(embed_vectors.shape) != 2:
         embed_tensor = tf.Variable(np.array(embed_vectors).reshape(len(embed_vectors), -1),
-                                   name=('embed_%d' % embed_idx))
+                                   name=embed_name)
     else:
-        embed_tensor = tf.Variable(embed_vectors, name=('embed_%s' % embed_idx))
+        embed_tensor = tf.Variable(embed_vectors, name=embed_name)
 
     sess.run(embed_tensor.initializer)
     return embed_tensor
