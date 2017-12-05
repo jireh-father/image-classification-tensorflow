@@ -260,9 +260,9 @@ for i, result in enumerate(results):
     results[i] = def_params
 
 print(len(results))
+now = datetime.now().strftime('%Y%m%d%H%M%S')
 for params in results:
     try:
-        now = datetime.now().strftime('%Y%m%d%H%M%S')
         params["log_dir"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "log_" + now,
                                          params["dataset_name"], params["model_name"], str(uuid.uuid4()))
 
