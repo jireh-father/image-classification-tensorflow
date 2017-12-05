@@ -149,3 +149,9 @@ def make_tfrecord(dataset_name, dataset_dir, train_fraction=0.9, num_channels=3,
               open(os.path.join(dataset_dir, "metadata"), mode="w+"))
 
     return num_dataset, len(class_names)
+
+# def tfrecord_sample_nums(dataset_name, dataset_dir):
+#     c = 0
+#     for fn in tf_records_filenames:
+#         for record in tf.python_io.tf_record_iterator(fn):
+#             c += 1
