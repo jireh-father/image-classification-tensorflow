@@ -18,6 +18,8 @@ DEFAULT_PARAMS = {
     'num_shards': None,
     'train_name': "train",
     "test_name": "validation",
+    'vis_epoch': 10,
+    'num_vis_steps': 3,
     'batch_size': 16,
     'model_image_size': None,
     'deconv_image_size': 30,
@@ -282,10 +284,10 @@ grid_params = {
             #         "cycle_learning_rate": True
             #     }
         },
-    "epoch": 50,
+    "epoch": 100,
     "weight_decay": 0.00004,
     "summary_interval": 10,
-    "summary_images": 32,
+    "summary_images": 64,
     "shuffle_buffer": 100,
     "num_dataset_parallel": 4,
     "visualize_embedding": True

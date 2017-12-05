@@ -1,20 +1,23 @@
 import tensorflow as tf
 import trainer
+import os
 
 FLAGS = tf.app.flags.FLAGS
-tf.app.flags.DEFINE_string('dataset_name', "mnist", "dataset name")
-tf.app.flags.DEFINE_string('dataset_dir', "D:\develop\models_new_1122\\research\slim\\mnist_dataset", "dataset_dir")
-tf.app.flags.DEFINE_string('train_name', "test", "train dataset file name")
-tf.app.flags.DEFINE_string('test_name', "train", "test dataset file name")
+tf.app.flags.DEFINE_string('dataset_name', "block_test", "dataset name")
+tf.app.flags.DEFINE_string('dataset_dir', "F:\data\grading\\block_test\\block_images_for_block_classification",
+                           "dataset_dir")
+tf.app.flags.DEFINE_string('train_name', "train", "train dataset file name")
+tf.app.flags.DEFINE_string('test_name', "validation", "test dataset file name")
 tf.app.flags.DEFINE_string('log_dir', "log_dir", "save dir")
-tf.app.flags.DEFINE_string('vis_dir', None, "vis_dir")
-tf.app.flags.DEFINE_string('model_name', "deconv_conv", "model name")
+tf.app.flags.DEFINE_integer('vis_epoch', 1, "vis_epoch")
+tf.app.flags.DEFINE_integer('num_vis_steps', 10, "num_vis_steps")
+tf.app.flags.DEFINE_string('model_name', "alexnet_v2", "model name")
 tf.app.flags.DEFINE_integer('batch_size', 16, "batch_size")
 tf.app.flags.DEFINE_integer('model_image_size', None, "model_image_size")
 tf.app.flags.DEFINE_integer('deconv_image_size', 30, "deconv_image_size")
 tf.app.flags.DEFINE_integer('summary_interval', 10, "summary_interval")
 tf.app.flags.DEFINE_integer('summary_images', 32, "summary_images")
-tf.app.flags.DEFINE_integer('epoch', 100, "epoch")
+tf.app.flags.DEFINE_integer('epoch', 3, "epoch")
 tf.app.flags.DEFINE_boolean('train', True, "trains")
 tf.app.flags.DEFINE_boolean('eval', True, "eval")
 tf.app.flags.DEFINE_boolean('bn', False, "bn")
@@ -28,11 +31,11 @@ tf.app.flags.DEFINE_string('filter_size', "[64,64,64,64,64]", "filter_size")
 tf.app.flags.DEFINE_integer('shuffle_buffer', 50, "shuffle_buffer")
 tf.app.flags.DEFINE_integer('num_layers', 5, "deconv layers")
 tf.app.flags.DEFINE_integer('num_channel', 1, "num channel")
-tf.app.flags.DEFINE_integer('num_classes', 3, "num classes")
 tf.app.flags.DEFINE_integer('num_dataset_parallel', 4, "deconv layers")
 tf.app.flags.DEFINE_string('restore_model_path', None, "model path to restore")
 tf.app.flags.DEFINE_string('preprocessing_name', None, "preprocessing name")
 tf.app.flags.DEFINE_string('filters', "[9, 9, 9,9,9,9,9]", "filters")
+tf.app.flags.DEFINE_float('train_fraction', 0.9, "train_fraction")
 
 ######################
 # Optimization Flags #
@@ -123,5 +126,4 @@ tf.app.flags.DEFINE_float(
     'If left as None, then moving averages are not used.')
 
 tf.app.flags.DEFINE_boolean('cycle_learning_rate', True, "cycle")
-
 trainer.train(FLAGS)

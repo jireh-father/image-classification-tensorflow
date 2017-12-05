@@ -4,6 +4,7 @@ import random
 import math
 import sys
 import dataset_utils
+import json
 
 # Seed for repeatability.
 _RANDOM_SEED = 0
@@ -48,6 +49,7 @@ class ImageReader(object):
 
     def __init__(self, num_channels):
         # Initializes function that decodes Grayscale JPEG data.
+        self.num_channels = num_channels
         self._decode_jpeg_data = tf.placeholder(dtype=tf.string)
         self._decode_jpeg = tf.image.decode_jpeg(self._decode_jpeg_data, channels=num_channels)
 
@@ -59,7 +61,7 @@ class ImageReader(object):
         image = sess.run(self._decode_jpeg,
                          feed_dict={self._decode_jpeg_data: image_data})
         assert len(image.shape) == 3
-        assert image.shape[2] == 3
+        assert image.shape[2] == self.num_channels
         return image
 
 
@@ -116,9 +118,9 @@ def make_tfrecord(dataset_name, dataset_dir, train_fraction=0.9, num_channels=3,
     if not tf.gfile.Exists(dataset_dir):
         tf.gfile.MakeDirs(dataset_dir)
 
-    if _dataset_exists(dataset_dir, num_shards):
+    if _dataset_exists(dataset_name, dataset_dir, num_shards):
         print('Dataset files already exist. Exiting without re-creating them.')
-        return
+        return None, None
 
     random.seed(_RANDOM_SEED)
     photo_filenames, class_names = _get_filenames_and_classes(dataset_dir)
@@ -128,6 +130,7 @@ def make_tfrecord(dataset_name, dataset_dir, train_fraction=0.9, num_channels=3,
     random.shuffle(photo_filenames)
     num_train = int(len(photo_filenames) * train_fraction)
     num_validation = int(len(photo_filenames) * 1 - train_fraction)
+    num_dataset = len(photo_filenames)
     training_filenames = photo_filenames[num_train:]
     validation_filenames = photo_filenames[:num_validation]
 
@@ -141,3 +144,8 @@ def make_tfrecord(dataset_name, dataset_dir, train_fraction=0.9, num_channels=3,
     # Finally, write the labels file:
     labels_to_class_names = dict(zip(range(len(class_names)), class_names))
     dataset_utils.write_label_file(labels_to_class_names, dataset_dir)
+
+    json.dump({"num_train": num_train, "num_validation": num_validation, "num_classes": len(class_names)},
+              open(os.path.join(dataset_dir, "metadata"), mode="w+"))
+
+    return num_dataset, len(class_names)

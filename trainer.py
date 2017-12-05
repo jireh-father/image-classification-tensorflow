@@ -7,6 +7,7 @@ from datetime import datetime
 import dataset
 import visualizer
 import numpy as np
+import json
 
 NUM_DATASET_MAP = {"mnist": [60000, 10000, 10, 1], "cifar10": [50000, 10000, 10, 3], "flowers": [3320, 350, 5, 3],
                    "block": [4579, 510, 3, 1],
@@ -15,10 +16,18 @@ NUM_DATASET_MAP = {"mnist": [60000, 10000, 10, 1], "cifar10": [50000, 10000, 10,
 
 def train(conf):
     if conf.dataset_name not in NUM_DATASET_MAP:
-        dataset.make_tfrecord(conf.dataset_name, conf.dataset_dir, conf.train_fraction)
-        NUM_DATASET_MAP[conf.dataset_name] = [conf.num_dataset * conf.train_fraction,
-                                              conf.num_dataset * (1 - conf.train_fraction), conf.num_classes,
-                                              conf.num_channel]
+        num_dataset, num_classes = dataset.make_tfrecord(conf.dataset_name, conf.dataset_dir, conf.train_fraction,
+                                                         conf.num_channel,
+                                                         conf.num_dataset_parallel)
+        if num_dataset is None:
+            metadata = json.load(open("metadata"))
+            NUM_DATASET_MAP[conf.dataset_name] = [metadata["num_train"],
+                                                  metadata["num_validation"], metadata["num_classes"],
+                                                  conf.num_channel]
+        else:
+            NUM_DATASET_MAP[conf.dataset_name] = [num_dataset * conf.train_fraction,
+                                                  num_dataset * (1 - conf.train_fraction), num_classes,
+                                                  conf.num_channel]
     num_channel = NUM_DATASET_MAP[conf.dataset_name][3]
     num_classes = NUM_DATASET_MAP[conf.dataset_name][2]
     is_training = tf.placeholder(tf.bool, shape=(), name="is_training")
@@ -107,8 +116,9 @@ def train(conf):
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     sess = tf.Session(config=config)
-    train_writer = tf.summary.FileWriter(conf.log_dir + '/train', sess.graph)
-    test_writer = tf.summary.FileWriter(conf.log_dir + '/test')
+    summary_dir = os.path.join(conf.log_dir, "summary")
+    train_writer = tf.summary.FileWriter(summary_dir + '/train', sess.graph)
+    test_writer = tf.summary.FileWriter(summary_dir + '/test')
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
     if conf.restore_model_path and len(glob.glob(conf.restore_model_path + ".data-00000-of-00001")) > 0:
@@ -131,10 +141,7 @@ def train(conf):
             while True:
                 try:
                     batch_xs, batch_ys = sess.run(train_iterator.get_next())
-                    total_dataset = []
-                    np.append(batch_xs, total_dataset, axis=0)
-                    sys.exit()
-                    results = sess.run([train_op, merged, accuracy_op] + ops,
+                    results = sess.run([train_op, merged, accuracy_op, ] + ops,
                                        feed_dict={inputs: batch_xs, labels: batch_ys, is_training: True})
                     now = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
                     if train_step % conf.summary_interval == 0:
@@ -151,9 +158,9 @@ def train(conf):
             total_accuracy = 0
             test_step = 0
             sess.run(test_iterator.initializer)
-            total_dataset = []
-            total_labels = []
-            total_activations = []
+            total_dataset = None
+            total_labels = None
+            total_activations = None
             while True:
                 try:
                     test_xs, test_ys = sess.run(test_iterator.get_next())
@@ -167,17 +174,24 @@ def train(conf):
                         now, epoch, test_step, num_test, results[1])) + ops_results)
                     test_writer.add_summary(results[0], test_step + (train_step + epoch * num_train))
                     test_step += 1
-                    if epoch == conf.epoch - 1 and conf.vis_dir:
-                        total_dataset = np.append(test_xs, total_dataset, axis=0)
-                        total_labels = np.append(test_ys, total_labels, axis=0)
-                        total_activations = np.append(results[2], total_activations, axis=0)
+                    if conf.vis_epoch is not None and epoch % conf.vis_epoch == 0:
+                        if conf.num_vis_steps >= test_step:
+                            if total_dataset is None:
+                                total_dataset = test_xs
+                                total_labels = test_ys
+                                total_activations = results[2]
+                            else:
+                                total_dataset = np.append(test_xs, total_dataset, axis=0)
+                                total_labels = np.append(test_ys, total_labels, axis=0)
+                                total_activations = np.append(results[2], total_activations, axis=0)
                 except tf.errors.OutOfRangeError:
                     break
             if test_step > 0:
                 print("Avg Accuracy : %f" % (float(total_accuracy) / test_step))
-            if epoch == conf.epoch - 1 and conf.vis_dir:
+            if conf.vis_epoch is not None and epoch % conf.vis_epoch == 0:
+                vis_dir = os.path.join(conf.log_dir, "embed_vis_%d" % epoch)
                 visualizer.summary_embedding(sess=sess, dataset=total_dataset, embedding_list=[total_activations],
-                                             embedding_path=conf.vis_dir, image_size=model_image_size,
+                                             embedding_path=vis_dir, image_size=model_image_size,
                                              channel=num_channel, labels=total_labels)
         if not conf.train:
             break
