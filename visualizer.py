@@ -12,7 +12,7 @@ def add_embedding(config, sess, embedding_list, embedding_path, image_size, chan
 
     for embed_idx, embed_vectors in enumerate(embedding_list):
         embed_tensor = make_embed_tensor(sess, embed_vectors, embed_idx, prefix)
-    write_projector_config(config, embed_tensor.name, embedding_path, image_size, channel, labels)
+        write_projector_config(config, embed_tensor.name, embedding_path, image_size, channel, labels)
 
     save_model(sess, embedding_path, prefix)
 

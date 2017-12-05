@@ -199,9 +199,9 @@ def train(conf):
                     visualizer.add_embedding(config, sess=sess, embedding_list=[total_activations],
                                              embedding_path=vis_dir, image_size=model_image_size,
                                              channel=num_channel, labels=total_labels, prefix="epoch" + str(epoch))
-                    # visualizer.summary_embedding(sess=sess, dataset=total_dataset, embedding_list=[total_activations],
-                    #                              embedding_path=vis_dir, image_size=model_image_size,
-                    #                              channel=num_channel, labels=total_labels, prefix="epoch" + str(epoch))
+                    total_dataset = None
+                    total_labels = None
+                    total_activations = None
         if not conf.train:
             break
     if conf.vis_epoch is not None:
