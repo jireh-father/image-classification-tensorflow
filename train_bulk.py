@@ -186,8 +186,8 @@ grid_params = {
 grid_params = {
     "dataset_name":
         {
-            "block": {"dataset_dir": "/home/data/block", "epoch": 50},
-            "direction": {"dataset_dir": "/home/data/direction", "epoch": 20}
+            "block": {"dataset_dir": "/home/data/block", "epoch": 50, 'vis_epoch': 10},
+            "direction": {"dataset_dir": "/home/data/direction", "epoch": 20, 'vis_epoch': 1}
         }
     ,
     "model_name":
