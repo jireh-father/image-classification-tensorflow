@@ -3,9 +3,8 @@ import trainer
 import os
 
 FLAGS = tf.app.flags.FLAGS
-tf.app.flags.DEFINE_string('dataset_name', "block_test", "dataset name")
-tf.app.flags.DEFINE_string('dataset_dir', "F:\data\grading\\block_test\\block_images_for_block_classification",
-                           "dataset_dir")
+tf.app.flags.DEFINE_string('dataset_name', None, "dataset name")
+tf.app.flags.DEFINE_string('dataset_dir', None, "dataset_dir")
 tf.app.flags.DEFINE_string('train_name', "train", "train dataset file name")
 tf.app.flags.DEFINE_string('test_name', "validation", "test dataset file name")
 tf.app.flags.DEFINE_string('log_dir', os.path.join(os.path.dirname(os.path.realpath(__file__)), "checkpoint"),

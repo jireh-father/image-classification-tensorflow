@@ -67,124 +67,122 @@ DEFAULT_PARAMS = {
     'moving_average_decay': None,
     'cycle_learning_rate': True,
     'train_fraction': 0.9,
-    'visualize_embedding': False,
     'num_save_interval': 1
 }
 
-grid_params = {
-    "dataset_name":
-        {
-            "block": {"dataset_dir": "/home/data/block"},
-            "direction": {"dataset_dir": "/home/data/direction"},
-            "flowers": {"dataset_dir": "/home/data/flowers"},
-            "cifar10": {"dataset_dir": "/home/data/cifar10"},
-            "new_dataset": {"dataset_dir": "/home/data/new_dataset", "train_fraction": 0.9, "num_classes": 3,
-                            "num_channel": 1, 'num_dataset': 4000, 'num_shards': 4},
-            # "mnist": {"dataset_dir": "/home/data/mnist"}
-        }
-    ,
-    "model_name":
-        {
-            "ed":
-                {
-                    "num_layers": 5,
-                    "bn": True,
-                    "add_image": True,
-                    "add_image_interval": 2,
-                    "strides": "[2,2,1,1,1]",
-                    "filter_size": "[64,64,64,64,64]",
-                    "filters": "[9,9,9,9,9]",
-                    "deconv_image_size": 30,
-                    "batch_size": 16,
-                    "preprocessing_name": None
-                },
-            # "conv":
-            #     {
-            #         "num_layers": [5, 3],
-            #         "bn": True,
-            #         "pooling": True,
-            #         "pool_size": "[3,3,3,3,3]",
-            #         "pool_stride": "[2,2,2,2,2]",
-            #         "strides": "[2,2,1,1,1]",
-            #         "filter_size": "[64,64,64,64,64]",
-            #         "filters": "[9,9,9,9,9]",
-            #         "batch_size": 16,
-            #         "preprocessing_name": None
-            #     },
-            "alexnet_v2": {"preprocessing_name": None},
-            # "resnet_v2_152": {"preprocessing_name": None},
-            "resnet_v2_101": {"preprocessing_name": None},
-            # "inception_resnet_v2": {"preprocessing_name": None},
-            "nasnet_large": {"preprocessing_name": None},
-            # "cifarnet": {"preprocessing_name": [None, "cifarnet"]},
-            # "vgg_19": {"preprocessing_name": [None, "vgg"]},
-            # "inception_v1": {"preprocessing_name": None},
-            # "inception_v2": {"preprocessing_name": None},
-            # "inception_v3": {"preprocessing_name": None},
-            # "inception_v4": {"preprocessing_name": "vgg"}
-        },
-    "optimizer": {
-        "sgd": None,
-        "rmsprop":
-            {
-                "rmsprop_momentum": 0.9,
-                "rmsprop_decay": 0.9,
-                "opt_epsilon": 1e-10,
-            },
-        # "adadelta":
-        #     {
-        #         "adadelta_rho": 0.95,
-        #         "opt_epsilon": 1.0,
-        #     },
-        # "adagrad":
-        #     {
-        #         "adagrad_initial_accumulator_value": 0.1
-        #     },
-        "adam":
-            {
-                "adam_beta1": 0.9,
-                "adam_beta2": 0.999,
-                "opt_epsilon": 1e-8,
-            },
-        # "ftrl":
-        #     {
-        #         "ftrl_learning_rate_power": -0.5,
-        #         "ftrl_initial_accumulator_value": 0.1,
-        #         "ftrl_l1": 0.0,
-        #         "ftrl_l2": 0.0
-        #     },
-        # "momentum": {
-        #     "momentum": 0.9,
-        # }
-    },
-    "learning_rate_decay_type":
-        {
-            "exponential":
-                {
-                    "learning_rate": [0.01, 0.001],
-                    "label_smoothing": 0.0,
-                    "learning_rate_decay_factor": 0.94,
-                    "num_epochs_per_decay": 2.0,
-                    "moving_average_decay": None
-                },
-            # "polynomial":
-            #     {
-            #         "learning_rate": [0.01, 0.001],
-            #         "end_learning_rate": 0.0001,
-            #         "label_smoothing": 0.0,
-            #         "num_epochs_per_decay": 2.0,
-            #         "moving_average_decay": None,
-            #         "cycle_learning_rate": True
-            #     }
-        },
-    "epoch": 1,
-    "weight_decay": 0.00004,
-    "summary_interval": 10,
-    "summary_images": 32,
-    "shuffle_buffer": 100,
-    "num_dataset_parallel": 4
-
-}
+# grid_params = {
+#     "dataset_name":
+#         {
+#             "block": {"dataset_dir": "/home/data/block"},
+#             "direction": {"dataset_dir": "/home/data/direction"},
+#             "flowers": {"dataset_dir": "/home/data/flowers"},
+#             "cifar10": {"dataset_dir": "/home/data/cifar10"},
+#             "new_dataset": {"dataset_dir": "/home/data/new_dataset", "train_fraction": 0.9, "num_classes": 3,
+#                             "num_channel": 1, 'num_dataset': 4000, 'num_shards': 4},
+#             "mnist": {"dataset_dir": "/home/data/mnist"}
+#         }
+#     ,
+#     "model_name":
+#         {
+#             "ed":
+#                 {
+#                     "num_layers": 5,
+#                     "bn": True,
+#                     "add_image": True,
+#                     "add_image_interval": 2,
+#                     "strides": "[2,2,1,1,1]",
+#                     "filter_size": "[64,64,64,64,64]",
+#                     "filters": "[9,9,9,9,9]",
+#                     "deconv_image_size": 30,
+#                     "batch_size": 16,
+#                     "preprocessing_name": None
+#                 },
+#             "conv":
+#                 {
+#                     "num_layers": [5, 3],
+#                     "bn": True,
+#                     "pooling": True,
+#                     "pool_size": "[3,3,3,3,3]",
+#                     "pool_stride": "[2,2,2,2,2]",
+#                     "strides": "[2,2,1,1,1]",
+#                     "filter_size": "[64,64,64,64,64]",
+#                     "filters": "[9,9,9,9,9]",
+#                     "batch_size": 16,
+#                     "preprocessing_name": None
+#                 },
+#             "alexnet_v2": {"preprocessing_name": None},
+#             "resnet_v2_152": {"preprocessing_name": None},
+#             "resnet_v2_101": {"preprocessing_name": None},
+#             "inception_resnet_v2": {"preprocessing_name": None},
+#             "nasnet_large": {"preprocessing_name": None},
+#             "cifarnet": {"preprocessing_name": [None, "cifarnet"]},
+#             "vgg_19": {"preprocessing_name": [None, "vgg"]},
+#             "inception_v1": {"preprocessing_name": None},
+#             "inception_v2": {"preprocessing_name": None},
+#             "inception_v3": {"preprocessing_name": None},
+#             "inception_v4": {"preprocessing_name": "vgg"}
+#         },
+#     "optimizer": {
+#         "sgd": None,
+#         "rmsprop":
+#             {
+#                 "rmsprop_momentum": 0.9,
+#                 "rmsprop_decay": 0.9,
+#                 "opt_epsilon": 1e-10,
+#             },
+#         "adadelta":
+#             {
+#                 "adadelta_rho": 0.95,
+#                 "opt_epsilon": 1.0,
+#             },
+#         "adagrad":
+#             {
+#                 "adagrad_initial_accumulator_value": 0.1
+#             },
+#         "adam":
+#             {
+#                 "adam_beta1": 0.9,
+#                 "adam_beta2": 0.999,
+#                 "opt_epsilon": 1e-8,
+#             },
+#         "ftrl":
+#             {
+#                 "ftrl_learning_rate_power": -0.5,
+#                 "ftrl_initial_accumulator_value": 0.1,
+#                 "ftrl_l1": 0.0,
+#                 "ftrl_l2": 0.0
+#             },
+#         "momentum": {
+#             "momentum": 0.9,
+#         }
+#     },
+#     "learning_rate_decay_type":
+#         {
+#             "exponential":
+#                 {
+#                     "learning_rate": [0.01, 0.001],
+#                     "label_smoothing": 0.0,
+#                     "learning_rate_decay_factor": 0.94,
+#                     "num_epochs_per_decay": 2.0,
+#                     "moving_average_decay": None
+#                 },
+#             "polynomial":
+#                 {
+#                     "learning_rate": [0.01, 0.001],
+#                     "end_learning_rate": 0.0001,
+#                     "label_smoothing": 0.0,
+#                     "num_epochs_per_decay": 2.0,
+#                     "moving_average_decay": None,
+#                     "cycle_learning_rate": True
+#                 }
+#         },
+#     "epoch": 1,
+#     "weight_decay": 0.00004,
+#     "summary_interval": 10,
+#     "summary_images": 32,
+#     "shuffle_buffer": 100,
+#     "num_dataset_parallel": 4
+# }
 
 grid_params = {
     "dataset_name":
@@ -226,18 +224,12 @@ grid_params = {
                     "num_epochs_per_decay": 2.0,
                     "moving_average_decay": None
                 },
-        },
-    "weight_decay": 0.00004,
-    "summary_interval": 10,
-    "summary_images": 64,
-    "shuffle_buffer": 100,
-    "num_dataset_parallel": 4,
-    "visualize_embedding": True
-
+        }
 }
 
 if FLAGS.bulk_json:
     grid_params = json.load(open(FLAGS.bulk_json))
+    print("bulk json load")
 else:
     json.dump(grid_params, open("grid_params.json", "w+"))
 
@@ -282,6 +274,6 @@ for params in results:
         params = Dict2Obj(params)
         trainer.train(params)
     except Exception as e:
-        tf.reset_default_graph()
         traceback.print_exc()
         # print(e)
+    tf.reset_default_graph()
