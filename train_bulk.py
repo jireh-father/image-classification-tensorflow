@@ -238,6 +238,8 @@ grid_params = {
 
 if FLAGS.bulk_json:
     grid_params = json.load(open(FLAGS.bulk_json))
+else:
+    json.dump(grid_params, open("grid_params.json", "w+"))
 
 results = trainer_parser.parse_train_conf(grid_params)
 
