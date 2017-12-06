@@ -187,8 +187,9 @@ DEFAULT_PARAMS = {
 grid_params = {
     "dataset_name":
         {
-            "block": {"dataset_dir": "/home/data/block", "epoch": 50, 'vis_epoch': 10, 'num_save_interval': 3},
-            "direction": {"dataset_dir": "/home/data/direction", "epoch": 20, 'vis_epoch': 1, 'num_save_interval': 1}
+            "block": {"dataset_dir": "F:\data\grading\\block", "epoch": 15, 'vis_epoch': 1, 'num_save_interval': 3},
+            "direction": {"dataset_dir": "F:\data\grading\\direction", "epoch": 12, 'vis_epoch': 1,
+                          'num_save_interval': 4}
         }
     ,
     "model_name":

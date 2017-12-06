@@ -199,7 +199,6 @@ def train(conf):
                 print("Avg Accuracy : %f" % (float(total_accuracy) / test_step))
                 if conf.vis_epoch is not None and epoch % conf.vis_epoch == 0:
                     # vis_dir = os.path.join(conf.log_dir, "embed_vis_%d" % epoch)
-
                     visualizer.add_embedding(config, sess=sess, embedding_list=[total_activations],
                                              embedding_path=vis_dir, image_size=model_image_size,
                                              channel=num_channel, labels=total_labels, prefix="epoch" + str(epoch))
