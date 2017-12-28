@@ -129,10 +129,10 @@ def make_tfrecord(dataset_name, dataset_dir, train_fraction=0.9, num_channels=3,
     print("Now let's start converting the Koreans dataset!")
     random.shuffle(photo_filenames)
     num_train = int(len(photo_filenames) * train_fraction)
-    num_validation = int(len(photo_filenames) * 1 - train_fraction)
+    num_validation = int(len(photo_filenames) * (1 - train_fraction))
     num_dataset = len(photo_filenames)
-    training_filenames = photo_filenames[num_train:]
-    validation_filenames = photo_filenames[:num_validation]
+    training_filenames = photo_filenames[:num_train]
+    validation_filenames = photo_filenames[num_train:]
 
     class_names_to_ids = dict(zip(class_names, range(len(class_names))))
     # First, convert the training and validation sets.

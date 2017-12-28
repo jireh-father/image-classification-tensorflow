@@ -187,9 +187,10 @@ DEFAULT_PARAMS = {
 grid_params = {
     "dataset_name":
         {
-            "block": {"dataset_dir": "F:\data\grading\\block", "epoch": 15, 'vis_epoch': 1, 'num_save_interval': 3},
-            "direction": {"dataset_dir": "F:\data\grading\\direction", "epoch": 12, 'vis_epoch': 1,
-                          'num_save_interval': 4}
+            "mustang": {"dataset_dir": "F:\data\mustang\dataset", "epoch": 100, 'vis_epoch': 10,
+                        'num_save_interval': 5, 'num_channel': 3, 'train_fraction': 0.9},
+            # "direction": {"dataset_dir": "F:\data\grading\\direction", "epoch": 12, 'vis_epoch': 1,
+            #               'num_save_interval': 4}
         }
     ,
     "model_name":
