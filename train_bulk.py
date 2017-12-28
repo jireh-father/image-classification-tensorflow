@@ -187,7 +187,7 @@ DEFAULT_PARAMS = {
 grid_params = {
     "dataset_name":
         {
-            "mustang": {"dataset_dir": "F:\data\mustang\dataset", "epoch": 100, 'vis_epoch': 10,
+            "mustang": {"dataset_dir": "F:\data\mustang\dataset", "epoch": 100, 'vis_epoch': 1,
                         'num_save_interval': 5, 'num_channel': 3, 'train_fraction': 0.9},
             # "direction": {"dataset_dir": "F:\data\grading\\direction", "epoch": 12, 'vis_epoch': 1,
             #               'num_save_interval': 4}
@@ -195,13 +195,28 @@ grid_params = {
     ,
     "model_name":
         {
-            "alexnet_v2": {"preprocessing_name": None, "batch_size": 64},
+            # "alexnet_v2": {"preprocessing_name": None, "batch_size": 64},
+            # "conv":
+            #     {
+            #         "num_layers": 2,
+            #         "bn": True,
+            #         "pooling": True,
+            #         "pool_size": "[3,3,3,3,3]",
+            #         "pool_stride": "[2,2,2,2,2]",
+            #         "strides": "[2,2,1,1,1]",
+            #         "filter_size": "[128,128,64,64,64]",
+            #         "filters": "[7,5,5,5,5]",
+            #         "batch_size": 16,
+            #         "preprocessing_name": None
+            #     },
             # "resnet_v2_152": {"preprocessing_name": None},
-            # "resnet_v2_101": {"preprocessing_name": None},
-            # "inception_resnet_v2": {"preprocessing_name": None},
+            # "resnet_v2_101": {"preprocessing_name": None, "batch_size": 8},
+            # "inception_resnet_v2": {"preprocessing_name": None, "batch_size": 6},
             # "nasnet_large": {"preprocessing_name": None},
+            "nasnet_mobile": {"preprocessing_name": None, "batch_size": 6},
+
             # "cifarnet": {"preprocessing_name": [None, "cifarnet"]},
-            # "vgg_19": {"preprocessing_name": None, "batch_size": 64},
+            # "vgg_19": {"preprocessing_name": None, "batch_size": 8},
             # "inception_v1": {"preprocessing_name": None},
             # "inception_v2": {"preprocessing_name": None},
             # "inception_v3": {"preprocessing_name": None},

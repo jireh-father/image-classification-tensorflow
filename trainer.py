@@ -21,7 +21,7 @@ def train(conf):
                                                          conf.num_channel,
                                                          conf.num_dataset_parallel)
         if num_dataset is None:
-            metadata = json.load(open("metadata"))
+            metadata = json.load(open(os.path.join(conf.dataset_dir, "metadata")))
             NUM_DATASET_MAP[conf.dataset_name] = [metadata["num_train"],
                                                   metadata["num_validation"], metadata["num_classes"],
                                                   conf.num_channel]

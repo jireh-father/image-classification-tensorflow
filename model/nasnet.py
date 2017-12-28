@@ -491,8 +491,9 @@ def _build_nasnet_base(images,
         if add_and_check_endpoint('Cell_{}'.format(cell_num), net):
             return net, end_points
         true_cell_num += 1
+        # print(is_training, type(is_training))
         if (hparams.use_aux_head and cell_num in aux_head_cell_idxes and
-                num_classes and is_training):
+          num_classes):  # and is_training):
             aux_net = tf.nn.relu(net)
             _build_aux_head(aux_net, end_points, num_classes, hparams,
                             scope='aux_{}'.format(cell_num))
