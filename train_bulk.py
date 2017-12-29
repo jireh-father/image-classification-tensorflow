@@ -195,7 +195,7 @@ grid_params = {
     ,
     "model_name":
         {
-            "alexnet_v2": {"preprocessing_name": None, "batch_size": 128},
+            # "alexnet_v2": {"preprocessing_name": None, "batch_size": 128},
             # "conv":
             #     {
             #         "num_layers": [1, 2, 3, 4, 5],
@@ -213,18 +213,18 @@ grid_params = {
             # "resnet_v2_101": {"preprocessing_name": None, "batch_size": 8},
             # "resnet_v1_50": {"preprocessing_name": None, "batch_size": 32},
             # "resnet_v2_50": {"preprocessing_name": None, "batch_size": 32},
-            "inception_resnet_v2": {"preprocessing_name": None, "batch_size": 12},
-            "nasnet_large": {"preprocessing_name": None, "batch_size": 10},
+            # "inception_resnet_v2": {"preprocessing_name": None, "batch_size": 12},
+            # "nasnet_large": {"preprocessing_name": None, "batch_size": 10},
             "lenet": {"preprocessing_name": None, "batch_size": 32},
             "nasnet_mobile": {"preprocessing_name": None, "batch_size": 12},
 
             # "cifarnet": {"preprocessing_name": [None, "cifarnet"]},
             "vgg_19": {"preprocessing_name": None, "batch_size": 12},
             "vgg_16": {"preprocessing_name": None, "batch_size": 12},
-            "vgg_a": {"preprocessing_name": None, "batch_size": 12},
-            "inception_v1": {"preprocessing_name": None, "batch_size": 16},
-            "inception_v2": {"preprocessing_name": None, "batch_size": 14},
-            "inception_v3": {"preprocessing_name": None, "batch_size": 12},
+            # "vgg_a": {"preprocessing_name": None, "batch_size": 12},
+            # "inception_v1": {"preprocessing_name": None, "batch_size": 16},
+            # "inception_v2": {"preprocessing_name": None, "batch_size": 14},
+            # "inception_v3": {"preprocessing_name": None, "batch_size": 12},
             "inception_v4": {"preprocessing_name": None, "batch_size": 10}
         },
     "optimizer": {
