@@ -196,34 +196,34 @@ grid_params = {
     "model_name":
         {
             "alexnet_v2": {"preprocessing_name": None, "batch_size": 128},
-            "conv":
-                {
-                    "num_layers": [1, 2, 3, 4, 5],
-                    "bn": True,
-                    "pooling": True,
-                    "pool_size": "[3,3,3,3,3]",
-                    "pool_stride": "[2,2,2,2,2]",
-                    "strides": "[2,2,2,2,2]",
-                    "filter_size": "[128,128,128,128,128]",
-                    "filters": "[5,5,5,5,5]",
-                    "batch_size": 8,
-                    "preprocessing_name": None
-                },
-            # "resnet_v2_152": {"preprocessing_name": None},
+            # "conv":
+            #     {
+            #         "num_layers": [1, 2, 3, 4, 5],
+            #         "bn": True,
+            #         "pooling": True,
+            #         "pool_size": "[3,3,3,3,3]",
+            #         "pool_stride": "[2,2,2,2,2]",
+            #         "strides": "[2,2,2,2,2]",
+            #         "filter_size": "[128,128,128,128,128]",
+            #         "filters": "[5,5,5,5,5]",
+            #         "batch_size": 8,
+            #         "preprocessing_name": None
+            #     },
+            # # "resnet_v2_152": {"preprocessing_name": None},
             # "resnet_v2_101": {"preprocessing_name": None, "batch_size": 8},
-            "resnet_v1_50": {"preprocessing_name": None, "batch_size": 32},
-            "resnet_v2_50": {"preprocessing_name": None, "batch_size": 32},
+            # "resnet_v1_50": {"preprocessing_name": None, "batch_size": 32},
+            # "resnet_v2_50": {"preprocessing_name": None, "batch_size": 32},
             "inception_resnet_v2": {"preprocessing_name": None, "batch_size": 12},
             "nasnet_large": {"preprocessing_name": None, "batch_size": 10},
             "lenet": {"preprocessing_name": None, "batch_size": 32},
             "nasnet_mobile": {"preprocessing_name": None, "batch_size": 12},
 
             # "cifarnet": {"preprocessing_name": [None, "cifarnet"]},
-            "vgg_19": {"preprocessing_name": None, "batch_size": 64},
-            "vgg_16": {"preprocessing_name": None, "batch_size": 64},
-            "vgg_a": {"preprocessing_name": None, "batch_size": 64},
-            "inception_v1": {"preprocessing_name": None, "batch_size": 32},
-            "inception_v2": {"preprocessing_name": None, "batch_size": 16},
+            "vgg_19": {"preprocessing_name": None, "batch_size": 12},
+            "vgg_16": {"preprocessing_name": None, "batch_size": 12},
+            "vgg_a": {"preprocessing_name": None, "batch_size": 12},
+            "inception_v1": {"preprocessing_name": None, "batch_size": 16},
+            "inception_v2": {"preprocessing_name": None, "batch_size": 14},
             "inception_v3": {"preprocessing_name": None, "batch_size": 12},
             "inception_v4": {"preprocessing_name": None, "batch_size": 10}
         },

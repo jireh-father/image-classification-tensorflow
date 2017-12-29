@@ -31,10 +31,15 @@ def train(conf):
                                                   conf.num_channel]
     num_channel = NUM_DATASET_MAP[conf.dataset_name][3]
     num_classes = NUM_DATASET_MAP[conf.dataset_name][2]
+
     is_training = tf.placeholder(tf.bool, shape=(), name="is_training")
 
-    model_f = model_factory.get_network_fn(conf.model_name, num_classes, weight_decay=conf.weight_decay,
-                                           is_training=is_training)
+    if conf.model_name[:6] == "nasnet":
+        model_f = model_factory.get_network_fn(conf.model_name, num_classes, weight_decay=conf.weight_decay,
+                                               is_training=is_training)
+    else:
+        model_f = model_factory.get_network_fn(conf.model_name, num_classes, weight_decay=conf.weight_decay,
+                                               is_training=True)
 
     model_image_size = conf.model_image_size or model_f.default_image_size
 
