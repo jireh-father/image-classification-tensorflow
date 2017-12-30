@@ -18,6 +18,7 @@ from preprocessing import inception_preprocessing
 from preprocessing import lenet_preprocessing
 from preprocessing import vgg_preprocessing
 from preprocessing import cifarnet_preprocessing
+from preprocessing import crop_or_pad
 
 
 def get_preprocessing(name, is_training=False):
@@ -60,6 +61,7 @@ def get_preprocessing(name, is_training=False):
         'vgg_a': vgg_preprocessing,
         'vgg_16': vgg_preprocessing,
         'vgg_19': vgg_preprocessing,
+        'crop_or_pad': crop_or_pad
     }
 
     if name not in preprocessing_fn_map:
