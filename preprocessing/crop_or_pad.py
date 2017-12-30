@@ -183,10 +183,11 @@ def preprocess_for_train(image, height, width, bbox,
             image = tf.image.convert_image_dtype(image, dtype=tf.float32)
         # Each bounding box has shape [1, num_boxes, box coords] and
         # the coordinates are ordered [ymin, xmin, ymax, xmax].
+        tf.summary.image('image original', tf.expand_dims(image, 0))
 
         distorted_image = tf.image.resize_image_with_crop_or_pad(image, height, width)
 
-        tf.summary.image('final_distorted_image', distorted_image)
+        tf.summary.image('final_distorted_image', tf.expand_dims(distorted_image, 0))
         distorted_image = tf.subtract(distorted_image, 0.5)
         distorted_image = tf.multiply(distorted_image, 2.0)
         return distorted_image
