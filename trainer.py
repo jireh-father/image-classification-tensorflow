@@ -146,7 +146,7 @@ def train(conf):
         total_activations = None
     for epoch in range(conf.epoch):
         train_step = 0
-        if total_dataset is not None:
+        if conf.vis_epoch is not None and total_dataset is not None:
             total_dataset = None
             total_labels = None
             total_activations = None
