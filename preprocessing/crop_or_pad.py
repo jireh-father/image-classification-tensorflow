@@ -190,7 +190,7 @@ def preprocess_for_train(image, height, width, bbox,
         tf.summary.image('final_distorted_image', tf.expand_dims(distorted_image, 0))
         distorted_image = tf.subtract(distorted_image, 0.5)
         distorted_image = tf.multiply(distorted_image, 2.0)
-        return distorted_image
+        return tf.image.per_image_standardization(distorted_image)
 
 
 def preprocess_for_eval(image, height, width,
@@ -232,7 +232,7 @@ def preprocess_for_eval(image, height, width,
         image = tf.image.resize_image_with_crop_or_pad(image, height, width)
         image = tf.subtract(image, 0.5)
         image = tf.multiply(image, 2.0)
-        return image
+        return tf.image.per_image_standardization(image)
 
 
 def preprocess_image(image, height, width,
