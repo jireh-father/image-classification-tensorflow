@@ -185,8 +185,8 @@ DEFAULT_PARAMS = {
 # }
 
 grid_params = {
-    "train": False,
-    "eval": False,
+    # "train": False,
+    # "eval": False,
     "dataset_name":
         {
             "mustang": {"dataset_dir": "/home/data/mustang/grayscale", "epoch": 5, 'vis_epoch': 4,
