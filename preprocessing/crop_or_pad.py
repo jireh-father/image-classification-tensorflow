@@ -187,7 +187,7 @@ def preprocess_for_train(image, height, width, bbox,
 
         distorted_image = tf.image.resize_image_with_crop_or_pad(image, height, width)
 
-        tf.summary.image('final_distorted_image', distorted_image, 0)
+        tf.summary.image('final_distorted_image', distorted_image)
         distorted_image = tf.subtract(distorted_image, 0.5)
         distorted_image = tf.multiply(distorted_image, 2.0)
         return distorted_image
