@@ -233,7 +233,7 @@ def preprocess_for_eval(image, height, width,
         image = tf.image.resize_image_with_crop_or_pad(image, height, width)
         image = tf.subtract(image, 0.5)
         image = tf.multiply(image, 2.0)
-        return image
+        return tf.image.per_image_standardization(image)
 
 
 def preprocess_image(image, height, width,
