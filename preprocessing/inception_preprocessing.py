@@ -33,8 +33,8 @@ def apply_with_random_selector(x, func, num_cases):
     sel = tf.random_uniform([], maxval=num_cases, dtype=tf.int32)
     # Pass the real x only to one of the func calls.
     return control_flow_ops.merge([
-                                      func(control_flow_ops.switch(x, tf.equal(sel, case))[1], case)
-                                      for case in range(num_cases)])[0]
+        func(control_flow_ops.switch(x, tf.equal(sel, case))[1], case)
+        for case in range(num_cases)])[0]
 
 
 def distort_color(image, color_ordering=0, fast_mode=True, scope=None):
@@ -190,7 +190,7 @@ def preprocess_for_train(image, height, width, bbox,
         image_with_box = tf.image.draw_bounding_boxes(tf.expand_dims(image, 0),
                                                       bbox)
         if add_image_summaries:
-            tf.summary.image('imaage_with_bounding_boxes', image_with_box)
+            tf.summary.image('image_with_bounding_boxes', image_with_box)
 
         distorted_image, distorted_bbox = distorted_bounding_box_crop(image, bbox)
         # Restore the shape since the dynamic slice based upon the bbox_size loses
