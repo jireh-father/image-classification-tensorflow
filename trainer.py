@@ -55,17 +55,9 @@ def train(conf):
             image_preprocessing_fn = preprocessing_factory.get_preprocessing(conf.preprocessing_name,
                                                                              is_training=training)
             image = tf.image.decode_image(parsed_features["image/encoded"], num_channel)
-            if conf.preprocessing_name == "crop":
-                image_height = parsed_features["image/height"]
-                image_width = parsed_features["image/width"]
-                print(image_height, image_width, "ff")
-                image = tf.clip_by_value(
-                    image_preprocessing_fn(image, [image_height, model_image_size], [image_width, model_image_size]),
-                    .0, 1.0)
-            else:
-                image = tf.clip_by_value(
-                    image_preprocessing_fn(image, model_image_size, model_image_size),
-                    .0, 1.0)
+            image = tf.clip_by_value(
+                image_preprocessing_fn(image, model_image_size, model_image_size),
+                .0, 1.0)
         else:
             image = tf.clip_by_value(tf.image.per_image_standardization(
                 tf.image.resize_images(tf.image.decode_jpeg(parsed_features["image/encoded"], num_channel),
