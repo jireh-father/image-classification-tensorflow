@@ -160,8 +160,6 @@ def train(conf):
             while True:
                 try:
                     batch_xs, batch_ys = sess.run(train_iterator.get_next())
-                    print(batch_xs.max(), batch_xs.min())
-                    sys.exit()
                     results = sess.run([train_op, merged, accuracy_op, ] + ops,
                                        feed_dict={inputs: batch_xs, labels: batch_ys, is_training: True})
                     now = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
