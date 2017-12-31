@@ -178,21 +178,35 @@ def preprocess_for_train(image, height, width, bbox,
     Returns:
       3-D float Tensor of distorted image used for training with range [-1, 1].
     """
+    image_height = height[0]
+    image_width = width[0]
+    height = height[1]
+    width = width[1]
     with tf.name_scope(scope, 'distort_image', [image, height, width, bbox]):
         if image.dtype != tf.float32:
             image = tf.image.convert_image_dtype(image, dtype=tf.float32)
         # Each bounding box has shape [1, num_boxes, box coords] and
         # the coordinates are ordered [ymin, xmin, ymax, xmax].
-        image_width = image.get_shape()[1]
-        image_height = image.get_shape()[2]
-        tf.summary.image('image original', tf.expand_dims(image, 0))
 
-        distorted_image = tf.image.resize_image_with_crop_or_pad(image, height, width)
+        # image_width = int(image.get_shape()[1])
+        # image_height = int(image.get_shape()[2])
+        if image_width > image_height:
+            crop_length = image_height
+            crop_x_offset = image_width / 2 - crop_length / 2
+            crop_y_offset = 0
+        else:
+            crop_length = image_width
+            crop_x_offset = 0
+            crop_y_offset = image_height / 2 - crop_length / 2
+
+        tf.summary.image('image original', tf.expand_dims(image, 0))
+        image = tf.image.crop_to_bounding_box(image, crop_x_offset, crop_y_offset, crop_length, crop_length)
+        distorted_image = tf.image.resize_images(image, [width, height])
 
         tf.summary.image('final_distorted_image', tf.expand_dims(distorted_image, 0))
         distorted_image = tf.subtract(distorted_image, 0.5)
         distorted_image = tf.multiply(distorted_image, 2.0)
-
+        # return distorted_image
         return tf.image.per_image_standardization(distorted_image)
 
 
@@ -218,6 +232,7 @@ def preprocess_for_eval(image, height, width,
     Returns:
       3-D float Tensor of prepared image.
     """
+
     with tf.name_scope(scope, 'eval_image', [image, height, width]):
         if image.dtype != tf.float32:
             image = tf.image.convert_image_dtype(image, dtype=tf.float32)
@@ -271,4 +286,5 @@ def preprocess_image(image, height, width,
         return preprocess_for_train(image, height, width, bbox, fast_mode,
                                     add_image_summaries=add_image_summaries)
     else:
-        return preprocess_for_eval(image, height, width)
+        return preprocess_for_train(image, height, width, bbox, fast_mode,
+                                    add_image_summaries=add_image_summaries)
