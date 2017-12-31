@@ -56,12 +56,11 @@ def train(conf):
                                                                              is_training=training)
             image = tf.image.decode_image(parsed_features["image/encoded"], num_channel)
             image = tf.clip_by_value(
-                image_preprocessing_fn(image, model_image_size, model_image_size),
-                .0, 1.0)
+                image_preprocessing_fn(image, model_image_size, model_image_size), -1, 1.0)
         else:
             image = tf.clip_by_value(tf.image.per_image_standardization(
                 tf.image.resize_images(tf.image.decode_jpeg(parsed_features["image/encoded"], num_channel),
-                                       [model_image_size, model_image_size])), .0, 1.0)
+                                       [model_image_size, model_image_size])), -1., 1.0)
 
         if len(parsed_features["image/class/label"].get_shape()) == 0:
             label = tf.one_hot(parsed_features["image/class/label"], num_classes)
@@ -161,6 +160,8 @@ def train(conf):
             while True:
                 try:
                     batch_xs, batch_ys = sess.run(train_iterator.get_next())
+                    print(batch_xs.max(), batch_xs.min())
+                    sys.exit()
                     results = sess.run([train_op, merged, accuracy_op, ] + ops,
                                        feed_dict={inputs: batch_xs, labels: batch_ys, is_training: True})
                     now = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
