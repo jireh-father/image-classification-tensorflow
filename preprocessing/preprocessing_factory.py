@@ -19,7 +19,6 @@ from preprocessing import lenet_preprocessing
 from preprocessing import vgg_preprocessing
 from preprocessing import cifarnet_preprocessing
 from preprocessing import crop_or_pad
-from preprocessing import crop
 
 
 def get_preprocessing(name, is_training=False):
