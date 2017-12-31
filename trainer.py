@@ -156,12 +156,14 @@ def train(conf):
             total_activations = None
         if conf.train:
             sess.run(train_iterator.initializer)
-
+            total_train_accuracy = .0
+            inner_train_step = 0
             while True:
                 try:
                     batch_xs, batch_ys = sess.run(train_iterator.get_next())
                     results = sess.run([train_op, merged, accuracy_op, ] + ops,
                                        feed_dict={inputs: batch_xs, labels: batch_ys, is_training: True})
+                    total_train_accuracy += results[2]
                     now = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
                     if train_step % conf.summary_interval == 0:
                         ops_results = " ".join(list(map(lambda x: str(x), list(zip(ops_key, results[3:])))))
@@ -170,8 +172,11 @@ def train(conf):
                                 now, epoch, train_step, num_train, results[2])) + ops_results)
                         train_writer.add_summary(results[1], train_step + epoch * num_train)
                     train_step += 1
+                    inner_train_step += 1
                 except tf.errors.OutOfRangeError:
                     break
+            if inner_train_step > 0:
+                print("Avg Train Accuracy : %f" % (float(total_train_accuracy) / inner_train_step))
             if epoch % conf.num_save_interval == 0:
                 saver.save(sess, conf.log_dir + "/model_epoch_%d.ckpt" % epoch)
         if conf.eval:
