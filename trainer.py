@@ -137,8 +137,10 @@ def train(conf):
     train_iterator = tf.data.TFRecordDataset(train_filenames).map(train_dataset_map,
                                                                   conf.num_dataset_parallel).shuffle(
         buffer_size=conf.shuffle_buffer).batch(conf.batch_size).make_initializable_iterator()
+    train_next = train_iterator.get_next()
     test_iterator = tf.data.TFRecordDataset(test_filenames).map(test_dataset_map, conf.num_dataset_parallel).batch(
         conf.batch_size).make_initializable_iterator()
+    test_next = test_iterator.get_next()
 
     num_train = NUM_DATASET_MAP[conf.dataset_name][0] // conf.batch_size
     num_test = NUM_DATASET_MAP[conf.dataset_name][1] // conf.batch_size
@@ -160,7 +162,7 @@ def train(conf):
             inner_train_step = 0
             while True:
                 try:
-                    batch_xs, batch_ys = sess.run(train_iterator.get_next())
+                    batch_xs, batch_ys = sess.run(train_next)
                     results = sess.run([train_op, merged, accuracy_op, ] + ops,
                                        feed_dict={inputs: batch_xs, labels: batch_ys, is_training: True})
                     total_train_accuracy += results[2]
@@ -186,7 +188,7 @@ def train(conf):
 
             while True:
                 try:
-                    test_xs, test_ys = sess.run(test_iterator.get_next())
+                    test_xs, test_ys = sess.run(test_next)
                     results = sess.run(
                         [merged, accuracy_op, logits] + ops,
                         feed_dict={inputs: test_xs, labels: test_ys, is_training: False})
