@@ -190,9 +190,18 @@ grid_params = {
     "dataset_name":
         {
             # "mustang": {"dataset_dir": "f:/data/mustang/grayscale_over_sampling", "epoch": 5,  # 'vis_epoch': None,
-            "mustang": {"dataset_dir": "/home/data/mustang/grayscale_over_sampling", "epoch": 100,
+            # "mustang_oversampling": {"dataset_dir": "f:/data/mustang/grayscale_oversampling", "epoch": 100,
+            #                          'vis_epoch': None,
+            #                          'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
+            "mustang": {"dataset_dir": "/home/data/mustang", "epoch": 100,
                         'vis_epoch': None,
                         'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
+            # "mustang_crop_oversampling": {"dataset_dir": "f:/data/mustang/grayscale_crop_oversampling", "epoch": 100,
+            #                               'vis_epoch': None,
+            #                               'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
+            # "mustang_crop": {"dataset_dir": "f:/data/mustang/grayscale_crop_unbalanced", "epoch": 100,
+            #                  'vis_epoch': None,
+            #                  'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
             # "direction": {"dataset_dir": "F:\data\grading\\direction", "epoch": 12, 'vis_epoch': 1,
             #               'num_save_interval': 4}
         }
