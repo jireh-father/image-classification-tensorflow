@@ -193,12 +193,12 @@ grid_params = {
             # "mustang_oversampling": {"dataset_dir": "f:/data/mustang/grayscale_oversampling", "epoch": 100,
             #                          'vis_epoch': None,
             #                          'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
-            "mustang": {"dataset_dir": "/home/data/mustang", "epoch": 100,
-                        'vis_epoch': None,
-                        'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
-            # "mustang_crop_oversampling": {"dataset_dir": "f:/data/mustang/grayscale_crop_oversampling", "epoch": 100,
-            #                               'vis_epoch': None,
-            #                               'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
+            # "mustang": {"dataset_dir": "/home/data/mustang", "epoch": 100,
+            #             'vis_epoch': None,
+            #             'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
+            "mustang_crop_oversampling": {"dataset_dir": "f:/data/mustang/grayscale_unbalanced", "epoch": 10,
+                                          'vis_epoch': 1,
+                                          'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
             # "mustang_crop": {"dataset_dir": "f:/data/mustang/grayscale_crop_unbalanced", "epoch": 100,
             #                  'vis_epoch': None,
             #                  'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
@@ -208,7 +208,7 @@ grid_params = {
     ,
     "model_name":
         {
-            # "alexnet_v2": {"preprocessing_name": None, "batch_size": 128},
+            "alexnet_v2": {"preprocessing_name": None, "batch_size": 128},
             # "conv":
             #     {
             #         "num_layers": [1, 2, 3, 4, 5],
@@ -238,7 +238,7 @@ grid_params = {
             # "inception_v1": {"preprocessing_name": None, "batch_size": 16},
             # "inception_v2": {"preprocessing_name": None, "batch_size": 14},
             # "inception_v3": {"preprocessing_name": None, "batch_size": 12},
-            "inception_v4": {"preprocessing_name": None, "batch_size": 10}
+            # "inception_v4": {"preprocessing_name": None, "batch_size": 10}
         },
     "optimizer": {
         # "sgd": None,
