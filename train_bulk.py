@@ -196,9 +196,9 @@ grid_params = {
             # "mustang": {"dataset_dir": "/home/data/mustang", "epoch": 100,
             #             'vis_epoch': None,
             #             'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
-            "mustang_crop_oversampling": {"dataset_dir": "f:/data/mustang/grayscale_unbalanced", "epoch": 10,
-                                          'vis_epoch': 1,
-                                          'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
+            "block": {"dataset_dir": "F:\data\grading\\block", "epoch": 10,
+                      'vis_epoch': 1,
+                      'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
             # "mustang_crop": {"dataset_dir": "f:/data/mustang/grayscale_crop_unbalanced", "epoch": 100,
             #                  'vis_epoch': None,
             #                  'num_save_interval': 10, 'num_channel': 1, 'train_fraction': 0.9},
@@ -238,7 +238,7 @@ grid_params = {
             # "inception_v1": {"preprocessing_name": None, "batch_size": 16},
             # "inception_v2": {"preprocessing_name": None, "batch_size": 14},
             # "inception_v3": {"preprocessing_name": None, "batch_size": 12},
-            # "inception_v4": {"preprocessing_name": None, "batch_size": 10}
+            # "inception_v4": {"preprocessing_name": None, "batch_size": 6}
         },
     "optimizer": {
         # "sgd": None,

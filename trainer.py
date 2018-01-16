@@ -9,10 +9,20 @@ import visualizer
 import numpy as np
 import json
 from tensorflow.contrib.tensorboard.plugins import projector
+from grad_cam_plus_plus import GradCamPlusPlus
 
 NUM_DATASET_MAP = {"mnist": [60000, 10000, 10, 1], "cifar10": [50000, 10000, 10, 3], "flowers": [3320, 350, 5, 3],
                    "block": [4579, 510, 3, 1],
                    "direction": [3036, 332, 4, 1]}
+
+
+def write_summary(log_dir, names, imgs, sess):
+    for i, name in enumerate(names):
+        img_tensor = tf.constant(np.expand_dims(imgs[i][:, :, ::-1], axis=0))
+        tf.summary.image(name, img_tensor, 2)
+    merged_summary = tf.summary.merge_all()
+    with tf.summary.FileWriter(log_dir) as summary_writer:
+        summary_writer.add_summary(sess.run(merged_summary))
 
 
 def train(conf):
@@ -113,7 +123,7 @@ def train(conf):
         tf.summary.scalar('accuracy', accuracy_op)
         merged = tf.summary.merge_all()
 
-        return inputs, labels, train_op, accuracy_op, merged, ops, ops_key, logits
+        return inputs, labels, train_op, accuracy_op, merged, ops, ops_key, logits, end_points
 
     if not os.path.exists(conf.dataset_dir):
         conf.dataset_dir = os.path.join("/home/data", conf.dataset_name)
@@ -121,7 +131,7 @@ def train(conf):
     train_filenames = glob.glob(os.path.join(conf.dataset_dir, conf.dataset_name + ("_%s*tfrecord" % conf.train_name)))
     test_filenames = glob.glob(os.path.join(conf.dataset_dir, conf.dataset_name + ("_%s*tfrecord" % conf.test_name)))
 
-    inputs, labels, train_op, accuracy_op, merged, ops, ops_key, logits = get_model()
+    inputs, labels, train_op, accuracy_op, merged, ops, ops_key, logits, end_points = get_model()
 
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -209,6 +219,34 @@ def train(conf):
                                 total_dataset = np.append(test_xs, total_dataset, axis=0)
                                 total_labels = np.append(test_ys, total_labels, axis=0)
                                 total_activations = np.append(results[2], total_activations, axis=0)
+
+                            result_imgs = list()
+                            summary_names = list()
+                            ### Create CAM image
+                            if end_points and conf.model_name == "alexnet_v2":
+                                grad_cam_plus_plus = GradCamPlusPlus(sess, logits, end_points['alexnet_v2/conv5'],
+                                                                     inputs)
+                                cam_imgs, class_indices = grad_cam_plus_plus.create_cam_img(test_xs, results[2])
+
+                                for i in range(len(test_xs)):
+                                    box_img = np.copy(test_xs[i])
+                                    for j in range(GradCamPlusPlus.TOP3):
+                                        ### Overlay heatmap
+                                        heapmap = grad_cam_plus_plus.convert_cam_2_heatmap(cam_imgs[i][j])
+                                        overlay_img = grad_cam_plus_plus.overlay_heatmap(test_xs[i], heapmap)
+                                        result_imgs.append(overlay_img)
+                                        summary_names.append('Label_%d_Top_%d'.format(labels[i], j))
+
+                                        ### Boxing
+                                        color = [0, 0, 0]
+                                        color[j] = 255
+                                        box_img = grad_cam_plus_plus.draw_rectangle(box_img, cam_imgs[i][j], color)
+
+                                    result_imgs.append(box_img)
+                                    summary_names.append('Boxing')
+                            ### Write summary
+                            write_summary('log', summary_names, result_imgs, sess)
+
                 except tf.errors.OutOfRangeError:
                     break
             if test_step > 0:
