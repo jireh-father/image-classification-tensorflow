@@ -360,7 +360,8 @@ def inception_resnet_v2(inputs, num_classes=1001, is_training=True,
 
 
 inception_resnet_v2.default_image_size = 299
-
+inception_resnet_v2.default_logit_layer_name = 'Logits'
+inception_resnet_v2.default_last_conv_layer_name = 'Mixed_7a'
 
 def inception_resnet_v2_arg_scope(weight_decay=0.00004,
                                   batch_norm_decay=0.9997,

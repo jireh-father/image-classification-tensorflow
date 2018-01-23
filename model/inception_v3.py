@@ -541,7 +541,8 @@ def inception_v3(inputs,
 
 
 inception_v3.default_image_size = 299
-
+inception_v3.default_logit_layer_name = 'Logits'
+inception_v3.default_last_conv_layer_name = 'Mixed_7b'
 
 def _reduced_kernel_size_for_small_input(input_tensor, kernel_size):
     """Define kernel size which is automatically reduced for small input.

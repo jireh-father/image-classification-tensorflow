@@ -3,22 +3,23 @@ import trainer
 import os
 
 FLAGS = tf.app.flags.FLAGS
-tf.app.flags.DEFINE_string('dataset_name', "direction", "dataset name")
-tf.app.flags.DEFINE_string('dataset_dir', "F:\data\grading\\direction", "dataset_dir")
+tf.app.flags.DEFINE_string('dataset_name', "block", "dataset name")
+tf.app.flags.DEFINE_string('dataset_dir', "F:\data\grading\\block", "dataset_dir")
 tf.app.flags.DEFINE_string('train_name', "train", "train dataset file name")
 tf.app.flags.DEFINE_string('test_name', "validation", "test dataset file name")
 tf.app.flags.DEFINE_string('log_dir', os.path.join(os.path.dirname(os.path.realpath(__file__)), "checkpoint"),
                            "save dir")
 tf.app.flags.DEFINE_integer('vis_epoch', 1, "vis_epoch")
 tf.app.flags.DEFINE_integer('num_vis_steps', 10, "num_vis_steps")
+tf.app.flags.DEFINE_integer('num_cam', 10, "num_cam")
 tf.app.flags.DEFINE_integer('num_save_interval', 1, "num_save_interval")
 tf.app.flags.DEFINE_string('model_name', "alexnet_v2", "model name")
-tf.app.flags.DEFINE_integer('batch_size', 16, "batch_size")
+tf.app.flags.DEFINE_integer('batch_size', 64, "batch_size")
 tf.app.flags.DEFINE_integer('model_image_size', None, "model_image_size")
 tf.app.flags.DEFINE_integer('deconv_image_size', 30, "deconv_image_size")
 tf.app.flags.DEFINE_integer('summary_interval', 10, "summary_interval")
 tf.app.flags.DEFINE_integer('summary_images', 32, "summary_images")
-tf.app.flags.DEFINE_integer('epoch', 3, "epoch")
+tf.app.flags.DEFINE_integer('epoch', 20, "epoch")
 tf.app.flags.DEFINE_boolean('train', True, "trains")
 tf.app.flags.DEFINE_boolean('eval', True, "eval")
 tf.app.flags.DEFINE_boolean('bn', False, "bn")

@@ -323,5 +323,7 @@ def inception_v1(inputs,
 
 
 inception_v1.default_image_size = 224
+inception_v1.default_logit_layer_name = 'Logits'
+inception_v1.default_last_conv_layer_name = 'Mixed_5b'
 
 inception_v1_arg_scope = inception_utils.inception_arg_scope

@@ -142,5 +142,9 @@ def get_network_fn(name, num_classes, weight_decay=0.0, is_training=False):
 
     if hasattr(func, 'default_image_size'):
         network_fn.default_image_size = func.default_image_size
+    if hasattr(func, 'default_logit_layer_name'):
+        network_fn.default_logit_layer_name = func.default_logit_layer_name
+    if hasattr(func, 'default_last_conv_layer_name'):
+        network_fn.default_last_conv_layer_name = func.default_last_conv_layer_name
 
     return network_fn

@@ -22,6 +22,7 @@ DEFAULT_PARAMS = {
     "test_name": "validation",
     'vis_epoch': 10,
     'num_vis_steps': 3,
+    'num_cam': 10,
     'batch_size': 16,
     'model_image_size': None,
     'deconv_image_size': 30,

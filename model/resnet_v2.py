@@ -271,7 +271,8 @@ def resnet_v2_50(inputs,
 
 
 resnet_v2_50.default_image_size = resnet_v2.default_image_size
-
+resnet_v2_50.default_logit_layer_name = 'resnet_v2_50/spatial_squeeze'
+resnet_v2_50.default_last_conv_layer_name = 'resnet_v2_50/block4'
 
 def resnet_v2_101(inputs,
                   num_classes=None,
@@ -295,7 +296,8 @@ def resnet_v2_101(inputs,
 
 
 resnet_v2_101.default_image_size = resnet_v2.default_image_size
-
+resnet_v2_101.default_logit_layer_name = 'resnet_v2_101/spatial_squeeze'
+resnet_v2_101.default_last_conv_layer_name = 'resnet_v2_101/block4'
 
 def resnet_v2_152(inputs,
                   num_classes=None,
@@ -319,7 +321,8 @@ def resnet_v2_152(inputs,
 
 
 resnet_v2_152.default_image_size = resnet_v2.default_image_size
-
+resnet_v2_152.default_logit_layer_name = 'resnet_v2_152/spatial_squeeze'
+resnet_v2_152.default_last_conv_layer_name = 'resnet_v2_152/block4'
 
 def resnet_v2_200(inputs,
                   num_classes=None,
@@ -343,3 +346,5 @@ def resnet_v2_200(inputs,
 
 
 resnet_v2_200.default_image_size = resnet_v2.default_image_size
+resnet_v2_200.default_logit_layer_name = 'resnet_v2_200/spatial_squeeze'
+resnet_v2_200.default_last_conv_layer_name = 'resnet_v2_200/block4'

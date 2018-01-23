@@ -330,5 +330,7 @@ def inception_v4(inputs, num_classes=1001, is_training=True,
 
 
 inception_v4.default_image_size = 299
+inception_v4.default_logit_layer_name = 'Logits'
+inception_v4.default_last_conv_layer_name = 'Mixed_7c'
 
 inception_v4_arg_scope = inception_utils.inception_arg_scope

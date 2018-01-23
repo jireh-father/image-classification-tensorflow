@@ -16,13 +16,11 @@ NUM_DATASET_MAP = {"mnist": [60000, 10000, 10, 1], "cifar10": [50000, 10000, 10,
                    "direction": [3036, 332, 4, 1]}
 
 
-def write_summary(log_dir, names, imgs, sess):
-    for i, name in enumerate(names):
-        img_tensor = tf.constant(np.expand_dims(imgs[i][:, :, ::-1], axis=0))
-        tf.summary.image(name, img_tensor, 2)
-    merged_summary = tf.summary.merge_all()
-    with tf.summary.FileWriter(log_dir) as summary_writer:
-        summary_writer.add_summary(sess.run(merged_summary))
+def write_summary(writer, epoch, imgs, sess):
+    img_tensor = tf.convert_to_tensor(np.array(imgs))
+    image_summaries = tf.summary.image("cam_heatmap_epoch" + str(epoch), img_tensor, len(imgs))
+    merged_image_summary = tf.summary.merge([image_summaries])
+    writer.add_summary(sess.run(merged_image_summary))
 
 
 def train(conf):
@@ -160,6 +158,8 @@ def train(conf):
         total_dataset = None
         total_labels = None
         total_activations = None
+    result_imgs = list()
+    summary_names = list()
     for epoch in range(conf.epoch):
         train_step = 0
         if conf.vis_epoch is not None and total_dataset is not None:
@@ -220,32 +220,31 @@ def train(conf):
                                 total_labels = np.append(test_ys, total_labels, axis=0)
                                 total_activations = np.append(results[2], total_activations, axis=0)
 
-                            result_imgs = list()
-                            summary_names = list()
                             ### Create CAM image
-                            if end_points and conf.model_name == "alexnet_v2":
-                                grad_cam_plus_plus = GradCamPlusPlus(sess, logits, end_points['alexnet_v2/conv5'],
+                            if end_points and conf.num_cam:
+                                grad_cam_plus_plus = GradCamPlusPlus(end_points[model_f.default_logit_layer_name],
+                                                                     end_points[model_f.default_last_conv_layer_name],
                                                                      inputs)
-                                cam_imgs, class_indices = grad_cam_plus_plus.create_cam_img(test_xs, results[2])
+                                cam_imgs, class_indices = grad_cam_plus_plus.create_cam_imgs(sess, test_xs, results[2])
 
-                                for i in range(len(test_xs)):
+                                for i in range(conf.num_cam):
                                     box_img = np.copy(test_xs[i])
-                                    for j in range(GradCamPlusPlus.TOP3):
-                                        ### Overlay heatmap
-                                        heapmap = grad_cam_plus_plus.convert_cam_2_heatmap(cam_imgs[i][j])
-                                        overlay_img = grad_cam_plus_plus.overlay_heatmap(test_xs[i], heapmap)
-                                        result_imgs.append(overlay_img)
-                                        summary_names.append('Label_%d_Top_%d'.format(labels[i], j))
+                                    # for j in range(GradCamPlusPlus.TOP3):
+                                    ### Overlay heatmap
+                                    heapmap = grad_cam_plus_plus.convert_cam_2_heatmap(cam_imgs[i][0])
+                                    overlay_img = grad_cam_plus_plus.overlay_heatmap(test_xs[i], heapmap)
+                                    result_imgs.append(overlay_img)
 
-                                        ### Boxing
-                                        color = [0, 0, 0]
-                                        color[j] = 255
-                                        box_img = grad_cam_plus_plus.draw_rectangle(box_img, cam_imgs[i][j], color)
-
-                                    result_imgs.append(box_img)
-                                    summary_names.append('Boxing')
-                            ### Write summary
-                            write_summary('log', summary_names, result_imgs, sess)
+                                    #     ### Boxing
+                                    #     color = [0, 0, 0]
+                                    #     color[j] = 255
+                                    #     box_img = grad_cam_plus_plus.draw_rectangle(box_img, cam_imgs[i][j], color)
+                                    #
+                                    # result_imgs.append(box_img)
+                                    # summary_names.append('Boxing_epoch_' + str(epoch))
+                                write_summary(test_writer, epoch, result_imgs, sess)
+                                summary_names = []
+                                result_imgs = []
 
                 except tf.errors.OutOfRangeError:
                     break
@@ -258,6 +257,10 @@ def train(conf):
                                              channel=num_channel, labels=total_labels, prefix="epoch" + str(epoch))
         if not conf.train:
             break
+
+    ### Write summary
+    # write_summary(test_writer, summary_names, result_imgs, sess)
+
     if conf.vis_epoch is not None:
         visualizer.write_embedding(config, sess, total_dataset, embedding_path=vis_dir, image_size=model_image_size,
                                    channel=num_channel, labels=total_labels)
