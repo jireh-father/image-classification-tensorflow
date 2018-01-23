@@ -160,6 +160,9 @@ def train(conf):
         total_activations = None
     heatmap_imgs = []
     bb_imgs = []
+    for cam_idx in range(num_classes):
+        heatmap_imgs.append([])
+        bb_imgs.append([])
     for epoch in range(conf.epoch):
         train_step = 0
         if conf.vis_epoch is not None and total_dataset is not None:
@@ -226,27 +229,33 @@ def train(conf):
                                                                      end_points[model_f.default_last_conv_layer_name],
                                                                      inputs)
                                 cam_imgs, class_indices = grad_cam_plus_plus.create_cam_imgs(sess, test_xs, results[2])
-
                                 for i in range(conf.num_cam):
                                     box_img = np.copy(test_xs[i])
                                     # for j in range(GradCamPlusPlus.TOP3):
                                     ### Overlay heatmap
                                     heapmap = grad_cam_plus_plus.convert_cam_2_heatmap(cam_imgs[i][0])
                                     overlay_img = grad_cam_plus_plus.overlay_heatmap(test_xs[i], heapmap)
-                                    heatmap_imgs.append(overlay_img)
+                                    heatmap_imgs[test_ys[i].argmax()].append(overlay_img)
 
                                     ### Boxing
                                     box_img = grad_cam_plus_plus.draw_rectangle(box_img, cam_imgs[i][0], [255, 0, 0])
-                                    bb_imgs.append(box_img)
+                                    bb_imgs[test_ys[i].argmax()].append(box_img)
 
 
                 except tf.errors.OutOfRangeError:
                     break
             if conf.vis_epoch is not None and epoch % conf.vis_epoch == 0:
-                write_summary(test_writer, "heatmap_epoch_" + str(epoch), heatmap_imgs, sess)
-                write_summary(test_writer, "bb_epoch_" + str(epoch), bb_imgs, sess)
+                for cam_idx in range(num_classes):
+                    if not heatmap_imgs[cam_idx]:
+                        continue
+                    write_summary(test_writer, "heatmap_epoch_%d_label_%d" % (epoch, cam_idx), heatmap_imgs[cam_idx],
+                                  sess)
+                    write_summary(test_writer, "bb_epoch_%d_label_%d" % (epoch, cam_idx), bb_imgs[cam_idx], sess)
                 bb_imgs = []
                 heatmap_imgs = []
+                for cam_idx in range(num_classes):
+                    heatmap_imgs.append([])
+                    bb_imgs.append([])
             if test_step > 0:
                 print("Avg Accuracy : %f" % (float(total_accuracy) / test_step))
                 if conf.vis_epoch is not None and epoch % conf.vis_epoch == 0:
