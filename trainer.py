@@ -242,6 +242,7 @@ def train(conf):
 
                 except tf.errors.OutOfRangeError:
                     break
+            if conf.vis_epoch is not None and epoch % conf.vis_epoch == 0:
                 write_summary(test_writer, "heatmap_epoch_" + str(epoch), heatmap_imgs, sess)
                 write_summary(test_writer, "bb_epoch_" + str(epoch), bb_imgs, sess)
                 bb_imgs = []
