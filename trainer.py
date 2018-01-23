@@ -238,13 +238,14 @@ def train(conf):
                                     ### Boxing
                                     box_img = grad_cam_plus_plus.draw_rectangle(box_img, cam_imgs[i][0], [255, 0, 0])
                                     bb_imgs.append(box_img)
-                                write_summary(test_writer, "heatmap_epoch_" + str(epoch), heatmap_imgs, sess)
-                                write_summary(test_writer, "bb_epoch_" + str(epoch), bb_imgs, sess)
-                                bb_imgs = []
-                                heatmap_imgs = []
+
 
                 except tf.errors.OutOfRangeError:
                     break
+                write_summary(test_writer, "heatmap_epoch_" + str(epoch), heatmap_imgs, sess)
+                write_summary(test_writer, "bb_epoch_" + str(epoch), bb_imgs, sess)
+                bb_imgs = []
+                heatmap_imgs = []
             if test_step > 0:
                 print("Avg Accuracy : %f" % (float(total_accuracy) / test_step))
                 if conf.vis_epoch is not None and epoch % conf.vis_epoch == 0:
