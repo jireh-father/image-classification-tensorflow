@@ -16,9 +16,9 @@ NUM_DATASET_MAP = {"mnist": [60000, 10000, 10, 1], "cifar10": [50000, 10000, 10,
                    "direction": [3036, 332, 4, 1]}
 
 
-def write_summary(writer, epoch, imgs, sess):
+def write_summary(writer, name, imgs, sess):
     img_tensor = tf.convert_to_tensor(np.array(imgs))
-    image_summaries = tf.summary.image("cam_heatmap_epoch" + str(epoch), img_tensor, len(imgs))
+    image_summaries = tf.summary.image(name, img_tensor, len(imgs))
     merged_image_summary = tf.summary.merge([image_summaries])
     writer.add_summary(sess.run(merged_image_summary))
 
@@ -158,8 +158,8 @@ def train(conf):
         total_dataset = None
         total_labels = None
         total_activations = None
-    result_imgs = list()
-    summary_names = list()
+    heatmap_imgs = []
+    bb_imgs = []
     for epoch in range(conf.epoch):
         train_step = 0
         if conf.vis_epoch is not None and total_dataset is not None:
@@ -233,18 +233,15 @@ def train(conf):
                                     ### Overlay heatmap
                                     heapmap = grad_cam_plus_plus.convert_cam_2_heatmap(cam_imgs[i][0])
                                     overlay_img = grad_cam_plus_plus.overlay_heatmap(test_xs[i], heapmap)
-                                    result_imgs.append(overlay_img)
+                                    heatmap_imgs.append(overlay_img)
 
-                                    #     ### Boxing
-                                    #     color = [0, 0, 0]
-                                    #     color[j] = 255
-                                    #     box_img = grad_cam_plus_plus.draw_rectangle(box_img, cam_imgs[i][j], color)
-                                    #
-                                    # result_imgs.append(box_img)
-                                    # summary_names.append('Boxing_epoch_' + str(epoch))
-                                write_summary(test_writer, epoch, result_imgs, sess)
-                                summary_names = []
-                                result_imgs = []
+                                    ### Boxing
+                                    box_img = grad_cam_plus_plus.draw_rectangle(box_img, cam_imgs[i][0], [255, 0, 0])
+                                    bb_imgs.append(box_img)
+                                write_summary(test_writer, "heatmap_epoch_" + str(epoch), heatmap_imgs, sess)
+                                write_summary(test_writer, "bb_epoch_" + str(epoch), bb_imgs, sess)
+                                bb_imgs = []
+                                heatmap_imgs = []
 
                 except tf.errors.OutOfRangeError:
                     break
