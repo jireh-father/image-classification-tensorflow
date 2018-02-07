@@ -3,10 +3,10 @@ import trainer
 import os
 
 FLAGS = tf.app.flags.FLAGS
-tf.app.flags.DEFINE_string('dataset_name', "direction", "dataset name")
-tf.app.flags.DEFINE_string('dataset_dir', "F:\data\grading\direction", "dataset_dir")
+tf.app.flags.DEFINE_string('dataset_name', "mustang_oversampling", "dataset name")
+tf.app.flags.DEFINE_string('dataset_dir', "F:\data\mustang\grayscale_oversampling", "dataset_dir")
 tf.app.flags.DEFINE_string('model_name', "alexnet_v2", "model name")
-tf.app.flags.DEFINE_integer('batch_size', 64, "batch_size")
+tf.app.flags.DEFINE_integer('batch_size', 32, "batch_size")
 tf.app.flags.DEFINE_integer('epoch', 10, "epoch")
 tf.app.flags.DEFINE_string('train_name', "train", "train dataset file name")
 tf.app.flags.DEFINE_string('test_name', "validation", "test dataset file name")
@@ -14,18 +14,21 @@ tf.app.flags.DEFINE_boolean('train', True, "trains")
 tf.app.flags.DEFINE_boolean('eval', True, "eval")
 tf.app.flags.DEFINE_float('train_fraction', 0.9, "train_fraction")
 tf.app.flags.DEFINE_integer('num_channel', 1, "num channel")
-tf.app.flags.DEFINE_integer('num_dataset_parallel', 4, "deconv layers")
+tf.app.flags.DEFINE_integer('num_dataset_parallel', 4, "num_dataset_parallel")
 tf.app.flags.DEFINE_string('log_dir', os.path.join(os.path.dirname(os.path.realpath(__file__)), "checkpoint"),
                            "save dir")
 tf.app.flags.DEFINE_integer('vis_epoch', 1, "vis_epoch")
 tf.app.flags.DEFINE_integer('num_vis_steps', 10, "num_vis_steps")
-tf.app.flags.DEFINE_integer('num_cam', 6, "num_cam")
+tf.app.flags.DEFINE_integer('num_cam', 4, "num_cam")
 tf.app.flags.DEFINE_integer('num_save_interval', 1, "num_save_interval")
 tf.app.flags.DEFINE_integer('summary_interval', 10, "summary_interval")
 tf.app.flags.DEFINE_integer('summary_images', 32, "summary_images")
 tf.app.flags.DEFINE_integer('shuffle_buffer', 50, "shuffle_buffer")
+tf.app.flags.DEFINE_boolean('use_predict_of_test_for_embed_vis', True, "use_predict_of_test_for_embed_vis")
+# tf.app.flags.DEFINE_string('restore_model_path', "checkpoint/model_epoch_9.ckpt", "model path to restore")
 tf.app.flags.DEFINE_string('restore_model_path', None, "model path to restore")
 tf.app.flags.DEFINE_string('preprocessing_name', None, "preprocessing name")
+tf.app.flags.DEFINE_boolean('use_regularizer', False, "use_regularizer")
 
 # custum cnn model
 tf.app.flags.DEFINE_integer('model_image_size', None, "model_image_size")
@@ -49,7 +52,7 @@ tf.app.flags.DEFINE_float(
 tf.app.flags.DEFINE_string(
     'optimizer', 'rmsprop',
     'The name of the optimizer, one of "adadelta", "adagrad", "adam",'
-    '"ftrl", "momentum", "sgd" or "rmsprop".')
+    '"ftrl", "momentum", "sgd"  "orrmsprop".')
 
 tf.app.flags.DEFINE_float(
     'adadelta_rho', 0.95,

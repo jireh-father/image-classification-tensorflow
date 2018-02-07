@@ -114,10 +114,19 @@ def train(conf):
             loss_op = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits))
             ops = [loss_op]
             ops_key = ["loss_op"]
+        if conf.use_regularizer:
+            weights = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+            regularizer = 0
+            for weight in weights:
+                regularizer += tf.nn.l2_loss(weight)
+            regularizer *= conf.weight_decay
+            loss_op += regularizer
         tf.summary.scalar('loss', loss_op)
         opt = optimizer.configure_optimizer(learning_rate, conf)
         train_op = opt.minimize(loss_op, global_step=global_step)
         accuracy_op = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1)), tf.float32))
+        ops.append(tf.argmax(logits, 1))
+        ops_key.append("predict_idx")
         tf.summary.scalar('accuracy', accuracy_op)
         merged = tf.summary.merge_all()
 
@@ -140,6 +149,7 @@ def train(conf):
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
     if conf.restore_model_path and len(glob.glob(conf.restore_model_path + ".data-00000-of-00001")) > 0:
+        print("restore!!")
         saver.restore(sess, conf.restore_model_path)
 
     train_iterator = tf.data.TFRecordDataset(train_filenames).map(train_dataset_map,
@@ -209,18 +219,27 @@ def train(conf):
                     now = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
                     ops_results = " ".join(list(map(lambda x: str(x), list(zip(ops_key, results[3:])))))
                     print(("[%s TEST %d epoch, %d /%d step] accuracy: %f" % (
-                        now, epoch, test_step, num_test, results[1])) + ops_results)
+                        now, epoch, test_step, num_test, results[1])) + ops_results + "labels", test_ys.argmax(1))
                     test_writer.add_summary(results[0], test_step + (train_step + epoch * num_train))
                     test_step += 1
                     if conf.vis_epoch is not None and epoch % conf.vis_epoch == 0:
                         if conf.num_vis_steps >= test_step:
+
+                            if conf.use_predict_of_test_for_embed_vis:
+                                predict_y = np.zeros((conf.batch_size, num_classes))
+                                predict_y[np.arange(conf.batch_size), results[-1]] = 1
+                                tmp_labels = predict_y
+                            else:
+                                tmp_labels = test_ys
+
                             if total_dataset is None:
                                 total_dataset = test_xs
-                                total_labels = test_ys
+                                total_labels = tmp_labels
+
                                 total_activations = results[2]
                             else:
                                 total_dataset = np.append(test_xs, total_dataset, axis=0)
-                                total_labels = np.append(test_ys, total_labels, axis=0)
+                                total_labels = np.append(tmp_labels, total_labels, axis=0)
                                 total_activations = np.append(results[2], total_activations, axis=0)
 
                             ### Create CAM image

@@ -36,6 +36,8 @@ DEFAULT_PARAMS = {
     'add_image_interval': 2,
     'pooling': True,
     'pool_size': "[3,3,3,3,3]",
+    'use_regularizer': False,
+    'use_predict_of_test_for_embed_vis': True,
     'pool_stride': "[2,2,2,2,2]",
     'strides': "[1,1,2,2,2]",
     'filter_size': 64,
