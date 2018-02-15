@@ -8,6 +8,7 @@ import dataset
 import visualizer
 import numpy as np
 import json
+import cv2
 from tensorflow.contrib.tensorboard.plugins import projector
 from grad_cam_plus_plus import GradCamPlusPlus
 
@@ -258,10 +259,12 @@ def train(conf):
                                     if key not in heatmap_imgs:
                                         heatmap_imgs[key] = []
                                         bb_imgs[key] = []
-                                    print(overlay_img[..., ::-1].shape)
-                                    sys.exit()
+                                    if len(test_xs[i].shape) != 3 or test_xs[i].shape[2] != 3:
+                                        test = cv2.cvtColor(test_xs[i], cv2.COLOR_GRAY2BGR)[..., ::-1]
+                                    else:
+                                        test = test_xs[i]
                                     heatmap_imgs[key].append(overlay_img[..., ::-1])
-                                    heatmap_imgs[key].append(test_xs[i])
+                                    heatmap_imgs[key].append(test)
 
                                     ### Boxing
                                     box_img = grad_cam_plus_plus.draw_rectangle(box_img, cam_imgs[i][0], [255, 0, 0])
