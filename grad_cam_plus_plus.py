@@ -9,7 +9,19 @@ class GradCamPlusPlus(object):
     COLOR_THRESHOLD = 200
 
     def __init__(self, logit, last_conv_layer, input_tensor):
-        self._build_net(logit, last_conv_layer, input_tensor)
+        self._build_net2(logit, last_conv_layer, input_tensor)
+
+    def _build_net2(self, logit, last_conv_layer, input_tensor):
+        assert len(logit.shape) == 2, 'len(logit.shape) == 2, but len(logit.shape): {}'.format(len(logit.shape))
+
+        self.last_conv_layer = last_conv_layer
+        self.input_tensor = input_tensor
+        self.label_vector = tf.placeholder("float", [None, logit.shape[1]])
+        self.label_index = tf.placeholder("int64")
+
+        cost = logit * self.label_vector
+        last_conv_layer_grad = tf.gradients(cost, last_conv_layer)[0]
+        self.cost_gard = last_conv_layer_grad[0]
 
     def _build_net(self, logit, last_conv_layer, input_tensor):
         assert len(logit.shape) == 2, 'len(logit.shape) == 2, but len(logit.shape): {}'.format(len(logit.shape))
@@ -20,6 +32,7 @@ class GradCamPlusPlus(object):
         self.label_index = tf.placeholder("int64")
 
         cost = logit * self.label_vector
+
         last_conv_layer_grad = tf.gradients(cost, last_conv_layer)[0]
         self.first_derivative = tf.exp(cost)[0][self.label_index] * last_conv_layer_grad
         self.second_derivative = tf.exp(cost)[0][self.label_index] * last_conv_layer_grad * last_conv_layer_grad
@@ -34,6 +47,30 @@ class GradCamPlusPlus(object):
         output[class_index] = 1.0
 
         return np.array(output)
+
+    def _create_cam_img2(self, sess, img, class_index, one_hot_encoding):
+        conv_output, conv_grad = sess.run(
+            [self.last_conv_layer, self.cost_gard],
+            feed_dict={self.input_tensor: [img], self.label_index: class_index,
+                       self.label_vector: [one_hot_encoding]})
+
+        feature_map = conv_output[0] * conv_grad
+        sum_feature_map = np.sum(feature_map, axis=2)
+        cam = (sum_feature_map - sum_feature_map.min()) / (sum_feature_map.max() - sum_feature_map.min())
+
+        return cv2.resize(cam, (img.shape[0], img.shape[1]))
+
+    def _create_cam_img3(self, sess, img, class_index, one_hot_encoding):
+        conv_output, conv_grad = sess.run(
+            [self.last_conv_layer, self.cost_gard],
+            feed_dict={self.input_tensor: [img], self.label_index: class_index,
+                       self.label_vector: [one_hot_encoding]})
+        global_sum = np.sum(conv_grad.reshape((-1, conv_grad.shape[2])), axis=0)
+        feature_map = conv_output[0] * global_sum.reshape((1, 1, conv_grad.shape[2]))
+        sum_feature_map = np.sum(feature_map, axis=2)
+        cam = (sum_feature_map - sum_feature_map.min()) / (sum_feature_map.max() - sum_feature_map.min())
+
+        return cv2.resize(cam, (img.shape[0], img.shape[1]))
 
     def _create_cam_img(self, sess, img, class_index, one_hot_encoding):
         conv_output, conv_first_grad, conv_second_grad, conv_third_grad = sess.run(
@@ -52,7 +89,6 @@ class GradCamPlusPlus(object):
         grad_cam_map = np.sum(deep_linearization_weights * conv_output[0], axis=2)
         cam = np.maximum(grad_cam_map, 0)
         cam = cam / np.max(cam)
-
         return cv2.resize(cam, (img.shape[0], img.shape[1]))
 
     def _normalize_images(self, imgs):
@@ -64,7 +100,6 @@ class GradCamPlusPlus(object):
     def create_cam_imgs(self, sess, imgs, probs):
         assert len(probs.shape) == 2, 'len(probs.shape) == 2 (batch size, label vector), but {}'.format(
             len(probs.shape))
-
         vector_size = probs.shape[1]
         cams = list()
         class_indices = list()
@@ -85,7 +120,7 @@ class GradCamPlusPlus(object):
                 class_indices_.append(class_index)
 
                 ### Create CAM image
-                cam = self._create_cam_img(sess, img, class_index, one_hot_encoding)
+                cam = self._create_cam_img2(sess, img, class_index, one_hot_encoding)
                 cam = np.uint8(cam * 255)  # image denormalization
                 cams_ = [cam] if len(cams_) == 0 else np.append(cams_, [cam], axis=0)
 
@@ -100,6 +135,13 @@ class GradCamPlusPlus(object):
 
         return cv2.applyColorMap(cam, cv2.COLORMAP_JET)  # rgb
 
+    @staticmethod
+    def show_image(img, title='title'):
+        cv2.imshow(title, img)
+        while True:
+            if cv2.waitKey(0) == 113:  # 'q' key
+                break
+
     def overlay_heatmap(self, img, heatmap):
         # heatmap color range: 0~255
         assert len(heatmap.shape) == 3 and heatmap.shape[2] == 3, 'heatmap must be RGB'
@@ -111,7 +153,9 @@ class GradCamPlusPlus(object):
         if img.max() <= 1:
             img = np.uint8(img * 255)
 
-        return cv2.addWeighted(heatmap, 0.4, img, 0.5, 0)
+        overay_heatmap = cv2.addWeighted(heatmap, 0.4, img, 0.5, 0)
+        # self.show_image(overay_heatmap)
+        return overay_heatmap
 
     def _get_upper_boundary(self, img, height, width):
         assert len(img.shape) == 2, 'len(img.shape) == 2, but len(img.shape): {}'.format(len(img.shape))

@@ -168,11 +168,8 @@ def train(conf):
         total_dataset = None
         total_labels = None
         total_activations = None
-    heatmap_imgs = []
-    bb_imgs = []
-    for cam_idx in range(num_classes):
-        heatmap_imgs.append([])
-        bb_imgs.append([])
+    heatmap_imgs = {}
+    bb_imgs = {}
     for epoch in range(conf.epoch):
         train_step = 0
         if conf.vis_epoch is not None and total_dataset is not None:
@@ -254,27 +251,30 @@ def train(conf):
                                     ### Overlay heatmap
                                     heapmap = grad_cam_plus_plus.convert_cam_2_heatmap(cam_imgs[i][0])
                                     overlay_img = grad_cam_plus_plus.overlay_heatmap(test_xs[i], heapmap)
-                                    heatmap_imgs[test_ys[i].argmax()].append(overlay_img)
+                                    if test_ys[i].argmax() == results[2][i].argmax():
+                                        key = "label_%dd" % test_ys[i].argmax()
+                                    else:
+                                        key = "fail_label_%d_pred_%d" % (test_ys[i].argmax(), results[2][i].argmax())
+                                    if key not in heatmap_imgs:
+                                        heatmap_imgs[key] = []
+                                        bb_imgs[key] = []
+                                    print(overlay_img[..., ::-1].shape)
+                                    sys.exit()
+                                    heatmap_imgs[key].append(overlay_img[..., ::-1])
+                                    heatmap_imgs[key].append(test_xs[i])
 
                                     ### Boxing
                                     box_img = grad_cam_plus_plus.draw_rectangle(box_img, cam_imgs[i][0], [255, 0, 0])
-                                    bb_imgs[test_ys[i].argmax()].append(box_img)
-
+                                    bb_imgs[key].append(box_img)
 
                 except tf.errors.OutOfRangeError:
                     break
             if conf.vis_epoch is not None and epoch % conf.vis_epoch == 0:
-                for cam_idx in range(num_classes):
-                    if not heatmap_imgs[cam_idx]:
-                        continue
-                    write_summary(test_writer, "heatmap_epoch_%d_label_%d" % (epoch, cam_idx), heatmap_imgs[cam_idx],
-                                  sess)
-                    write_summary(test_writer, "bb_epoch_%d_label_%d" % (epoch, cam_idx), bb_imgs[cam_idx], sess)
-                bb_imgs = []
-                heatmap_imgs = []
-                for cam_idx in range(num_classes):
-                    heatmap_imgs.append([])
-                    bb_imgs.append([])
+                for key in heatmap_imgs:
+                    write_summary(test_writer, "heatmap_epoch_%d_%s" % (epoch, key), heatmap_imgs[key], sess)
+                    write_summary(test_writer, "bb_epoch_%d_%s" % (epoch, key), bb_imgs[key], sess)
+                heatmap_imgs = {}
+                bb_imgs = {}
             if test_step > 0:
                 print("Avg Accuracy : %f" % (float(total_accuracy) / test_step))
                 if conf.vis_epoch is not None and epoch % conf.vis_epoch == 0:
@@ -288,7 +288,7 @@ def train(conf):
     ### Write summary
     # write_summary(test_writer, summary_names, result_imgs, sess)
 
-    if conf.vis_epoch is not None:
+    if conf.vis_epoch is not None and conf.eval and total_dataset is not None:
         visualizer.write_embedding(config, sess, total_dataset, embedding_path=vis_dir, image_size=model_image_size,
                                    channel=num_channel, labels=total_labels)
 
