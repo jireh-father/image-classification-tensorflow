@@ -31,6 +31,7 @@ from model import conv
 from model import deconv
 from model import ed
 from model import deconv_conv
+from model import mean_featuremap_cnn
 
 slim = tf.contrib.slim
 
@@ -63,7 +64,8 @@ networks_map = {'alexnet_v2': alexnet.alexnet_v2,
                 'conv': conv.build_model,
                 'deconv': deconv.build_model,
                 'ed': ed.build_model,
-                'deconv_conv': deconv_conv.build_model
+                'deconv_conv': deconv_conv.build_model,
+                'mean_fm': mean_featuremap_cnn.build_model,
                 }
 
 arg_scopes_map = {'alexnet_v2': alexnet.alexnet_v2_arg_scope,

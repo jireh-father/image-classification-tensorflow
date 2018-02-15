@@ -3,19 +3,23 @@ import trainer
 import os
 
 FLAGS = tf.app.flags.FLAGS
-tf.app.flags.DEFINE_string('dataset_name', "mustang_oversampling", "dataset name")
-tf.app.flags.DEFINE_string('dataset_dir', "F:\data\mustang\grayscale_oversampling", "dataset_dir")
+# tf.app.flags.DEFINE_string('dataset_name', "mustang_oversampling", "dataset name")
+# tf.app.flags.DEFINE_string('dataset_dir', "F:\data\mustang\grayscale_oversampling", "dataset_dir")
+tf.app.flags.DEFINE_string('dataset_name', "main", "dataset name")
+tf.app.flags.DEFINE_string('dataset_dir', "c:/data/main", "dataset_dir")
 tf.app.flags.DEFINE_string('model_name', "alexnet_v2", "model name")
-tf.app.flags.DEFINE_integer('batch_size', 32, "batch_size")
-tf.app.flags.DEFINE_integer('epoch', 10, "epoch")
+# tf.app.flags.DEFINE_string('model_name', "mean_fm", "model name")
+tf.app.flags.DEFINE_integer('batch_size', 16, "batch_size")
+tf.app.flags.DEFINE_integer('epoch', 100, "epoch")
 tf.app.flags.DEFINE_string('train_name', "train", "train dataset file name")
 tf.app.flags.DEFINE_string('test_name', "validation", "test dataset file name")
 tf.app.flags.DEFINE_boolean('train', True, "trains")
 tf.app.flags.DEFINE_boolean('eval', True, "eval")
 tf.app.flags.DEFINE_float('train_fraction', 0.9, "train_fraction")
-tf.app.flags.DEFINE_integer('num_channel', 1, "num channel")
+tf.app.flags.DEFINE_integer('num_channel', 3, "num channel")
+tf.app.flags.DEFINE_integer('num_classes', None, "num_classes")
 tf.app.flags.DEFINE_integer('num_dataset_parallel', 4, "num_dataset_parallel")
-tf.app.flags.DEFINE_string('log_dir', os.path.join(os.path.dirname(os.path.realpath(__file__)), "checkpoint"),
+tf.app.flags.DEFINE_string('log_dir', os.path.join(os.path.dirname(os.path.realpath(__file__)), "checkpoint_main_alex"),
                            "save dir")
 tf.app.flags.DEFINE_integer('vis_epoch', 1, "vis_epoch")
 tf.app.flags.DEFINE_integer('num_vis_steps', 10, "num_vis_steps")
