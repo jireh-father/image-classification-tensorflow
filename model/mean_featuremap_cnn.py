@@ -10,11 +10,19 @@ def build_model(inputs, num_classes, is_training, model_conf = None):
     filters = 100
     kernel_size = 5
     pool_size = 2
-    conv_layers = 3
+    conv_layers = 7
+
     for i in range(conv_layers):
         inputs = tf.layers.conv2d(inputs, filters, kernel_size, activation=tf.nn.relu)
         inputs = tf.layers.max_pooling2d(inputs, pool_size, 1)
+        inputs = tf.layers.batch_normalization(inputs=inputs, axis=3, momentum=bn_decay, epsilon=bn_epsilon,
+                                               center=True, scale=True, training=is_training, fused=True,
+                                               name="batch" + str(i))
 
+    # nets = tf.layers.conv2d(inputs, 1, 1, activation=tf.nn.relu)
+    # nets = tf.layers.batch_normalization(inputs=inputs, axis=3, momentum=bn_decay, epsilon=bn_epsilon,
+    #                                        center=True, scale=True, training=is_training, fused=True,
+    #                                        name="batch")
     nets = tf.reduce_mean(inputs, axis=3)
 
     shape = nets.get_shape()
@@ -34,6 +42,7 @@ def build_model(inputs, num_classes, is_training, model_conf = None):
     return logits, endpoints
 
 
-build_model.default_image_size = 60
+
+build_model.default_image_size = 90
 build_model.default_logit_layer_name="logits"
 build_model.default_last_conv_layer_name="last_conv"
