@@ -9,7 +9,7 @@ class GradCamPlusPlus(object):
     COLOR_THRESHOLD = 200
 
     def __init__(self, logit, last_conv_layer, input_tensor):
-        self._build_net2(logit, last_conv_layer, input_tensor)
+        self._build_net(logit, last_conv_layer, input_tensor)
 
     def _build_net2(self, logit, last_conv_layer, input_tensor):
         assert len(logit.shape) == 2, 'len(logit.shape) == 2, but len(logit.shape): {}'.format(len(logit.shape))
@@ -120,7 +120,7 @@ class GradCamPlusPlus(object):
                 class_indices_.append(class_index)
 
                 ### Create CAM image
-                cam = self._create_cam_img2(sess, img, class_index, one_hot_encoding)
+                cam = self._create_cam_img(sess, img, class_index, one_hot_encoding)
                 cam = np.uint8(cam * 255)  # image denormalization
                 cams_ = [cam] if len(cams_) == 0 else np.append(cams_, [cam], axis=0)
 
