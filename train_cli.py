@@ -56,7 +56,7 @@ tf.app.flags.DEFINE_float(
 tf.app.flags.DEFINE_string(
     'optimizer', 'rmsprop',
     'The name of the optimizer, one of "adadelta", "adagrad", "adam",'
-    '"ftrl", "momentum", "sgd"  "orrmsprop".')
+    '"ftrl", "momentum", "sgd"  "rmsprop".')
 
 tf.app.flags.DEFINE_float(
     'adadelta_rho', 0.95,
