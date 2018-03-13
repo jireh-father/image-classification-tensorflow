@@ -3,19 +3,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-lr = 0.00008
-
+lr = 1
+weight_decay = 0.0001
 x = tf.placeholder(tf.float32, [1, 2])
 y = tf.placeholder(tf.float32, [1, 1])
 
 # z = tf.layers.dense(x, 2, name="l1", use_bias=False, kernel_initializer=tf.initializers.ones)
 h = tf.layers.dense(x, 1, name="l2", use_bias=False, kernel_initializer=tf.initializers.ones)
 
-w = tf.trainable_variables()
+weights = tf.trainable_variables()
+regularizer = 0
+for weight in weights:
+    regularizer += tf.nn.l2_loss(weight)
+regularizer *= weight_decay
 
+loss = tf.losses.mean_squared_error(y, h) + regularizer
 loss = tf.losses.mean_squared_error(y, h)
 
-grad1 = tf.gradients(loss, w[0])[0]
+grad1 = tf.gradients(loss, weights[0])[0]
+
 # grad2 = tf.gradients(loss, w[1])[0]
 # loss = tf.reduce_mean(tf.square(y - h), axis=1)
 # print(loss)
@@ -48,25 +54,25 @@ xx = []
 yy = []
 zz = []
 for i in range(step):
-    _, loss_result, weights, gradients1= sess.run([train, loss, w, grad1], feed_dict={x: dx, y: dy})
+    _, loss_result, weights_result, gradients1 = sess.run([train, loss, weights, grad1], feed_dict={x: dx, y: dy})
     print("=======================================================================")
     print("# step %d" % i)
     print("loss", loss_result)
-    print("weights", weights)
+    print("weights", weights_result)
     print("grad", gradients1)
     print("gard variance", gradients1.var())
     zz.append(loss_result)
-    xx.append(weights[0][0][0])
-    yy.append(weights[0][1][0])
-    print("w1 update", weights[0][0][0], -(gradients1[0][0] * lr))
-    print("w2 update", weights[0][1][0], -(gradients1[1][0] * lr))
+    xx.append(weights_result[0][0][0])
+    yy.append(weights_result[0][1][0])
+    print("w1 update", weights_result[0][0][0], -(gradients1[0][0] * lr))
+    print("w2 update", weights_result[0][1][0], -(gradients1[1][0] * lr))
     # Axes3D.plot_trisurf(gradients1[0][0], gradients1[1][0], loss_result)
     # print(gradients2)
     # print(gradients2.var())
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-c=['red', 'blue', 'green', 'yellow', 'gray', 'black', 'cyan', 'magenta','orange','purple']
+c = ['red', 'blue', 'green', 'yellow', 'gray', 'black', 'cyan', 'magenta', 'orange', 'purple']
 # xx = np.array(xx)
 # yy = np.array(yy)
 # zz = np.array(zz)
@@ -77,7 +83,7 @@ print(xx)
 print(yy)
 print(zz)
 for i in range(len(xx) - 1):
-    ax.plot([xx[i], xx[i+1]], [yy[i], yy[i+1]], [zz[i], zz[i+1]], c=c[i])#, )
+    ax.plot([xx[i], xx[i + 1]], [yy[i], yy[i + 1]], [zz[i], zz[i + 1]], c=c[i])  # , )
 # ax.scatter(xx, yy, zz)
 # ax.plot([1,2],[1,2],[1,2])
 ax.set_xlabel('X Label')

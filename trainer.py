@@ -45,10 +45,10 @@ def train(conf):
 
     if conf.model_name[:6] == "nasnet":
         model_f = model_factory.get_network_fn(conf.model_name, num_classes, weight_decay=conf.weight_decay,
-                                               is_training=is_training)
+                                               is_training=True)
     else:
         model_f = model_factory.get_network_fn(conf.model_name, num_classes, weight_decay=conf.weight_decay,
-                                               is_training=True)
+                                               is_training=is_training)
 
     model_image_size = conf.model_image_size or model_f.default_image_size
 
@@ -244,7 +244,7 @@ def train(conf):
                             if end_points and conf.num_cam:
                                 grad_cam_plus_plus = GradCamPlusPlus(end_points[model_f.default_logit_layer_name],
                                                                      end_points[model_f.default_last_conv_layer_name],
-                                                                     inputs)
+                                                                     inputs, is_training)
                                 cam_imgs, class_indices = grad_cam_plus_plus.create_cam_imgs(sess, test_xs, results[2])
                                 for i in range(conf.num_cam):
                                     box_img = np.copy(test_xs[i])

@@ -8,8 +8,8 @@ class GradCamPlusPlus(object):
     TOP3 = 1
     COLOR_THRESHOLD = 200
 
-    def __init__(self, logit, last_conv_layer, input_tensor):
-        self._build_net(logit, last_conv_layer, input_tensor)
+    def __init__(self, logit, last_conv_layer, input_tensor, is_training):
+        self._build_net(logit, last_conv_layer, input_tensor, is_training)
 
     def _build_net2(self, logit, last_conv_layer, input_tensor):
         assert len(logit.shape) == 2, 'len(logit.shape) == 2, but len(logit.shape): {}'.format(len(logit.shape))
@@ -18,19 +18,20 @@ class GradCamPlusPlus(object):
         self.input_tensor = input_tensor
         self.label_vector = tf.placeholder("float", [None, logit.shape[1]])
         self.label_index = tf.placeholder("int64")
+        self.is_training = is_training
 
         cost = logit * self.label_vector
         last_conv_layer_grad = tf.gradients(cost, last_conv_layer)[0]
         self.cost_gard = last_conv_layer_grad[0]
 
-    def _build_net(self, logit, last_conv_layer, input_tensor):
+    def _build_net(self, logit, last_conv_layer, input_tensor, is_training):
         assert len(logit.shape) == 2, 'len(logit.shape) == 2, but len(logit.shape): {}'.format(len(logit.shape))
 
         self.last_conv_layer = last_conv_layer
         self.input_tensor = input_tensor
         self.label_vector = tf.placeholder("float", [None, logit.shape[1]])
         self.label_index = tf.placeholder("int64")
-
+        self.is_training = is_training
         cost = logit * self.label_vector
 
         last_conv_layer_grad = tf.gradients(cost, last_conv_layer)[0]
@@ -52,7 +53,7 @@ class GradCamPlusPlus(object):
         conv_output, conv_grad = sess.run(
             [self.last_conv_layer, self.cost_gard],
             feed_dict={self.input_tensor: [img], self.label_index: class_index,
-                       self.label_vector: [one_hot_encoding]})
+                       self.label_vector: [one_hot_encoding], self.is_training: False})
 
         feature_map = conv_output[0] * conv_grad
         sum_feature_map = np.sum(feature_map, axis=2)
@@ -64,7 +65,7 @@ class GradCamPlusPlus(object):
         conv_output, conv_grad = sess.run(
             [self.last_conv_layer, self.cost_gard],
             feed_dict={self.input_tensor: [img], self.label_index: class_index,
-                       self.label_vector: [one_hot_encoding]})
+                       self.label_vector: [one_hot_encoding], self.is_training: False})
         global_sum = np.sum(conv_grad.reshape((-1, conv_grad.shape[2])), axis=0)
         feature_map = conv_output[0] * global_sum.reshape((1, 1, conv_grad.shape[2]))
         sum_feature_map = np.sum(feature_map, axis=2)
@@ -75,7 +76,8 @@ class GradCamPlusPlus(object):
     def _create_cam_img(self, sess, img, class_index, one_hot_encoding):
         conv_output, conv_first_grad, conv_second_grad, conv_third_grad = sess.run(
             [self.last_conv_layer, self.first_derivative, self.second_derivative, self.triple_derivative],
-            feed_dict={self.input_tensor: [img], self.label_index: class_index, self.label_vector: [one_hot_encoding]})
+            feed_dict={self.input_tensor: [img], self.label_index: class_index, self.label_vector: [one_hot_encoding],
+                       self.is_training: False})
         global_sum = np.sum(conv_output[0].reshape((-1, conv_first_grad[0].shape[2])), axis=0)
         alpha_num = conv_second_grad[0]
         alpha_denom = conv_second_grad[0] * 2.0 + conv_third_grad[0] * global_sum.reshape(

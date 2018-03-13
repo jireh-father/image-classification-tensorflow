@@ -19,6 +19,7 @@ import functools
 import tensorflow as tf
 
 from model import alexnet
+from model import alexnet_ld
 from model import cifarnet
 from model import inception
 from model import lenet
@@ -66,6 +67,7 @@ networks_map = {'alexnet_v2': alexnet.alexnet_v2,
                 'ed': ed.build_model,
                 'deconv_conv': deconv_conv.build_model,
                 'mean_fm': mean_featuremap_cnn.build_model,
+                'alexnet_ld': alexnet_ld.alexnet_v2,
                 }
 
 arg_scopes_map = {'alexnet_v2': alexnet.alexnet_v2_arg_scope,
@@ -95,6 +97,7 @@ arg_scopes_map = {'alexnet_v2': alexnet.alexnet_v2_arg_scope,
                   'nasnet_cifar': nasnet.nasnet_cifar_arg_scope,
                   'nasnet_mobile': nasnet.nasnet_mobile_arg_scope,
                   'nasnet_large': nasnet.nasnet_large_arg_scope,
+                  'alexnet_ld': alexnet_ld.alexnet_v2_arg_scope,
                   }
 
 
